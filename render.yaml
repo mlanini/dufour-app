@@ -1,0 +1,37 @@
+# Render.com Blueprint for dufour.app
+# Simplified configuration for free tier deployment
+
+services:
+  # Frontend Web Service (Nginx + React)
+  - type: web
+    name: dufour-frontend
+    runtime: docker
+    dockerfilePath: ./Dockerfile.dev
+    repo: https://github.com/mlanini/dufour-app
+    branch: main
+    region: frankfurt  # or oregon for US
+    plan: free
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 80
+    healthCheckPath: /
+    autoDeploy: true
+
+# Note: For a complete deployment, you would also need:
+# - QGIS Server (requires custom Docker setup)
+# - PostGIS Database (use Render's managed PostgreSQL with PostGIS extension)
+#
+# These can be added as separate services if needed:
+#
+# databases:
+#   - name: dufour-postgis
+#     databaseName: gisdb
+#     user: gisuser
+#     plan: free  # or starter for PostGIS extension support
+#     region: frankfurt
+#     postgresMajorVersion: 15
+#     # Note: PostGIS extension must be enabled manually after creation
+#     # Connect and run: CREATE EXTENSION IF NOT EXISTS postgis;
+

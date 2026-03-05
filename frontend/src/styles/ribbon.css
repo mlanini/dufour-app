@@ -1,0 +1,751 @@
+/**
+ * KADAS-inspired Ribbon Theme
+ * Implements a ribbon-style toolbar similar to KADAS Albireo
+ */
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+}
+
+/* ============================================
+   RIBBON TOOLBAR (Top)
+   ============================================ */
+
+.ribbon-toolbar {
+  background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+  border-bottom: 2px solid #dee2e6;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  min-height: 110px;
+}
+
+/* Top bar with title and quick actions */
+.ribbon-top-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 12px;
+  background-color: var(--primary-color);
+  color: white;
+  min-height: 36px;
+}
+
+.ribbon-app-title {
+  font-size: 16px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ribbon-app-logo {
+  height: 24px;
+  width: 24px;
+}
+
+.ribbon-quick-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.ribbon-quick-action {
+  padding: 4px 12px;
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 3px;
+  color: white;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.ribbon-quick-action:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+/* Ribbon tabs */
+.ribbon-tabs {
+  display: flex;
+  gap: 2px;
+  padding: 0 12px;
+  background-color: #dee2e6;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.ribbon-tab {
+  padding: 6px 20px;
+  background-color: #e9ecef;
+  border: 1px solid #ced4da;
+  border-bottom: none;
+  border-radius: 4px 4px 0 0;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: #495057;
+  transition: all 0.2s;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.ribbon-tab:hover {
+  background-color: #f1f3f5;
+  color: var(--primary-color);
+}
+
+.ribbon-tab.active {
+  background-color: #f8f9fa;
+  color: var(--primary-color);
+  border-color: #adb5bd;
+  font-weight: 600;
+  position: relative;
+  z-index: 1;
+}
+
+/* Ribbon content with tool groups */
+.ribbon-content {
+  display: flex;
+  padding: 8px 12px;
+  gap: 12px;
+  overflow-x: auto;
+  scrollbar-width: thin;
+  background-color: #f8f9fa;
+  min-height: 68px;
+  align-items: stretch;
+}
+
+.ribbon-content::-webkit-scrollbar {
+  height: 6px;
+}
+
+.ribbon-content::-webkit-scrollbar-thumb {
+  background: #ced4da;
+  border-radius: 3px;
+}
+
+/* Tool groups within ribbon */
+.ribbon-group {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #dee2e6;
+  padding-right: 12px;
+  min-width: 100px;
+}
+
+.ribbon-group:last-child {
+  border-right: none;
+}
+
+.ribbon-group-label {
+  font-size: 11px;
+  color: #6c757d;
+  text-align: center;
+  margin-top: 4px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.ribbon-group-tools {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1;
+  align-items: center;
+}
+
+/* Tool buttons in ribbon */
+.ribbon-tool {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  max-width: 64px;
+  max-height: 64px;
+  position: relative;
+}
+
+.ribbon-tool:hover {
+  background: #e7f1ff;
+  border-color: var(--secondary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.ribbon-tool.active {
+  background: var(--secondary-color);
+  color: white;
+  border-color: var(--secondary-color);
+}
+
+.ribbon-tool.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.ribbon-tool-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.ribbon-tool-icon svg,
+.ribbon-tool-icon img {
+  width: 24px;
+  height: 24px;
+}
+
+.ribbon-tool-label {
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+/* Large tool button variant */
+.ribbon-tool.large {
+  width: 72px;
+  height: 72px;
+  min-width: 72px;
+  min-height: 72px;
+  max-width: 72px;
+  max-height: 72px;
+  flex-direction: column;
+}
+
+.ribbon-tool.large .ribbon-tool-icon {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+
+.ribbon-tool.large .ribbon-tool-icon svg,
+.ribbon-tool.large .ribbon-tool-icon img {
+  width: 32px;
+  height: 32px;
+}
+
+/* Small tool button variant (for grouped actions) */
+.ribbon-tool.small {
+  width: 48px;
+  height: 48px;
+  min-width: 48px;
+  min-height: 48px;
+  max-width: 48px;
+  max-height: 48px;
+  padding: 4px;
+}
+
+.ribbon-tool.small .ribbon-tool-icon {
+  font-size: 20px;
+  margin-bottom: 2px;
+}
+
+.ribbon-tool.small .ribbon-tool-label {
+  font-size: 10px;
+}
+
+/* ============================================
+   EDIT MODE SWITCHER (integrated in ribbon)
+   ============================================ */
+
+/* Mode switcher group styling */
+.ribbon-mode-switcher-group {
+  margin-left: auto;
+  border-left: 2px solid var(--border-color);
+  padding-left: 12px;
+}
+
+/* Mode buttons as ribbon tools */
+.edit-mode-switcher {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+  flex: 1;
+  align-items: center;
+}
+
+.edit-mode-switcher .mode-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  background: white;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  width: 64px;
+  height: 64px;
+  min-width: 64px;
+  min-height: 64px;
+  max-width: 64px;
+  max-height: 64px;
+}
+
+.edit-mode-switcher .mode-btn:hover {
+  background: #e7f1ff;
+  border-color: var(--primary-color);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.edit-mode-switcher .mode-btn.active {
+  background: var(--primary-color);
+  color: white;
+  border-color: var(--primary-color);
+}
+
+.edit-mode-switcher .mode-btn .ribbon-tool-icon {
+  font-size: 24px;
+  margin-bottom: 4px;
+  line-height: 1;
+}
+
+.edit-mode-switcher .mode-btn .ribbon-tool-label {
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.2;
+  font-weight: 500;
+}
+
+/* ============================================
+   MAP CONTAINER
+   ============================================ */
+
+.app-main {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+}
+
+.map-container {
+  flex: 1;
+  position: relative;
+  background-color: #e9ecef;
+}
+
+#map {
+  width: 100%;
+  height: 100%;
+}
+
+/* ============================================
+   SIDE PANELS
+   ============================================ */
+
+.side-panel {
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  max-width: 400px;
+  min-width: 300px;
+}
+
+.side-panel.left {
+  border-right: 1px solid #dee2e6;
+}
+
+.side-panel.right {
+  border-left: 1px solid #dee2e6;
+}
+
+.side-panel-header {
+  padding: 12px;
+  background: var(--primary-color);
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.side-panel-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.side-panel-close {
+  background: none;
+  border: none;
+  color: white;
+  font-size: 20px;
+  cursor: pointer;
+  padding: 0 6px;
+  line-height: 1;
+}
+
+.side-panel-close:hover {
+  opacity: 0.8;
+}
+
+.side-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* ============================================
+   STATUS BAR (Bottom)
+   ============================================ */
+
+.status-bar {
+  background: #f8f9fa;
+  border-top: 1px solid #dee2e6;
+  padding: 4px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #6c757d;
+  min-height: 28px;
+  z-index: 100;
+}
+
+.status-bar-left,
+.status-bar-center,
+.status-bar-right {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.status-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.status-item-label {
+  font-weight: 500;
+  color: #495057;
+}
+
+.status-item-value {
+  font-family: 'Courier New', monospace;
+}
+
+/* ============================================
+   RESPONSIVE DESIGN
+   ============================================ */
+
+@media (max-width: 768px) {
+  .mobile-menu-btn {
+    display: flex;
+  }
+
+  .ribbon-toolbar {
+    min-height: 90px;
+    position: fixed;
+    top: 0;
+    left: -100%;
+    width: 80%;
+    max-width: 300px;
+    height: 100vh;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: left 0.3s ease-in-out;
+    box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .ribbon-toolbar.mobile-open {
+    left: 0;
+  }
+  
+  .ribbon-top-bar {
+    padding: 4px 8px;
+    min-height: 32px;
+  }
+  
+  .ribbon-app-title {
+    font-size: 14px;
+  }
+  
+  .ribbon-quick-actions {
+    gap: 4px;
+  }
+  
+  .ribbon-quick-action {
+    padding: 4px 8px;
+    font-size: 12px;
+  }
+  
+  .ribbon-tabs {
+    padding: 0 8px;
+    flex-direction: column;
+  }
+  
+  .ribbon-tab {
+    padding: 8px 12px;
+    font-size: 12px;
+    width: 100%;
+    text-align: left;
+    border-radius: 4px;
+    border: 1px solid #ced4da;
+    margin-bottom: 2px;
+  }
+  
+  .ribbon-content {
+    padding: 6px 8px;
+    gap: 8px;
+    min-height: 56px;
+    flex-direction: column;
+  }
+  
+  .ribbon-group {
+    min-width: 100%;
+    padding-right: 8px;
+    border-right: none;
+    border-bottom: 1px solid #dee2e6;
+    padding-bottom: 8px;
+  }
+
+  .ribbon-group-tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  
+  .ribbon-tool {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    max-width: 56px;
+    max-height: 56px;
+    padding: 4px;
+  }
+  
+  .ribbon-tool-icon {
+    font-size: 20px;
+  }
+  
+  .ribbon-tool-label {
+    font-size: 10px;
+  }
+  
+  .side-panel {
+    max-width: 100%;
+    min-width: 280px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+  }
+  
+  .status-bar {
+    font-size: 11px;
+    padding: 3px 8px;
+    min-height: 24px;
+  }
+  
+  .status-bar-center {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .ribbon-app-title span {
+    display: none;
+  }
+  
+  .ribbon-quick-actions .ribbon-quick-action:not(:first-child) {
+    display: none;
+  }
+  
+  .ribbon-group-label {
+    display: none;
+  }
+  
+  .ribbon-tool-label {
+    display: none;
+  }
+  
+  .status-bar-right .status-item:not(:first-child) {
+    display: none;
+  }
+}
+
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
+
+.hidden {
+  display: none !important;
+}
+
+.collapsed {
+  width: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden;
+}
+
+.loading-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+/* ============================================
+   MOBILE MENU BUTTON
+   ============================================ */
+
+.mobile-menu-btn {
+  display: none;
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 1100;
+  width: 48px;
+  height: 48px;
+  background: white;
+  border: 2px solid var(--primary-color);
+  border-radius: 8px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 0;
+}
+
+/* Mobile responsive for edit-mode-switcher (integrated in ribbon) */
+@media (max-width: 768px) {
+  .ribbon-mode-switcher-group {
+    border-left: none;
+    padding-left: 0;
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .edit-mode-switcher {
+    gap: 4px;
+  }
+
+  .edit-mode-switcher .mode-btn {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    max-width: 56px;
+    max-height: 56px;
+  }
+
+  .edit-mode-switcher .mode-btn .ribbon-tool-icon {
+    font-size: 20px;
+  }
+
+  .edit-mode-switcher .mode-btn .ribbon-tool-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .edit-mode-switcher .mode-btn {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+    padding: 4px;
+  }
+
+  .edit-mode-switcher .mode-btn .ribbon-tool-icon {
+    font-size: 18px;
+    margin-bottom: 2px;
+  }
+
+  .edit-mode-switcher .mode-btn .ribbon-tool-label {
+    font-size: 9px;
+  }
+}
+
+.mobile-menu-btn span {
+  width: 24px;
+  height: 3px;
+  background: var(--primary-color);
+  border-radius: 2px;
+  transition: all 0.3s;
+  display: block;
+}
+
+.mobile-menu-btn.active span:nth-child(1) {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-btn.active span:nth-child(2) {
+  opacity: 0;
+}
+
+.mobile-menu-btn.active span:nth-child(3) {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Mobile menu overlay */
+.mobile-menu-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+/* ============================================
+   iOS SAFE AREA SUPPORT
+   ============================================ */
+
+@supports (padding: env(safe-area-inset-left)) {
+  .ribbon-top-bar {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+  }
+
+  .status-bar {
+    padding-left: max(12px, env(safe-area-inset-left));
+    padding-right: max(12px, env(safe-area-inset-right));
+    padding-bottom: max(4px, env(safe-area-inset-bottom));
+  }
+
+  .mobile-menu-btn {
+    right: max(10px, env(safe-area-inset-right));
+    top: max(10px, env(safe-area-inset-top));
+  }
+}

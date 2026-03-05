@@ -1,0 +1,85 @@
+{
+  "locale": "it-IT",
+  "messages": {
+    "app": {
+      "title": "dufour.app",
+      "subtitle": "Piattaforma GIS Web",
+      "loading": "Caricamento..."
+    },
+    "map": {
+      "loading": "Caricamento mappa...",
+      "zoom_in": "Ingrandisci",
+      "zoom_out": "Rimpicciolisci",
+      "home": "Vista iniziale",
+      "locate": "La mia posizione"
+    },
+    "layers": {
+      "title": "Livelli",
+      "background": "Sfondo",
+      "overlays": "Sovrapposizioni",
+      "add_layer": "Aggiungi livello",
+      "remove_layer": "Rimuovi livello",
+      "layer_properties": "Proprietà del livello",
+      "opacity": "Opacità",
+      "visibility": "Visibilità"
+    },
+    "tools": {
+      "measure": "Misurare",
+      "measure_distance": "Misura distanza",
+      "measure_area": "Misura superficie",
+      "measure_angle": "Misura angolo",
+      "redlining": "Disegnare",
+      "redlining_point": "Disegna punto",
+      "redlining_line": "Disegna linea",
+      "redlining_polygon": "Disegna poligono",
+      "redlining_text": "Aggiungi testo",
+      "identify": "Identificare",
+      "search": "Cercare",
+      "print": "Stampare",
+      "export": "Esportare",
+      "import": "Importare"
+    },
+    "search": {
+      "placeholder": "Cerca luogo, indirizzo...",
+      "no_results": "Nessun risultato trovato",
+      "coordinates": "Coordinate"
+    },
+    "military": {
+      "symbols": "Simboli militari",
+      "scenario": "Scenario",
+      "units": "Unità",
+      "add_unit": "Aggiungi unità",
+      "edit_unit": "Modifica unità",
+      "delete_unit": "Elimina unità"
+    },
+    "terrain": {
+      "analysis": "Analisi del terreno",
+      "slope": "Pendenza",
+      "viewshed": "Visibilità",
+      "profile": "Profilo altimetrico"
+    },
+    "gpx": {
+      "import": "Importa GPX",
+      "export": "Esporta GPX",
+      "tracks": "Tracce",
+      "waypoints": "Punti di passaggio",
+      "routes": "Percorsi"
+    },
+    "common": {
+      "ok": "OK",
+      "cancel": "Annulla",
+      "close": "Chiudi",
+      "save": "Salva",
+      "delete": "Elimina",
+      "edit": "Modifica",
+      "add": "Aggiungi",
+      "remove": "Rimuovi",
+      "yes": "Sì",
+      "no": "No",
+      "error": "Errore",
+      "warning": "Avviso",
+      "info": "Informazione",
+      "success": "Successo"
+    }
+  }
+}

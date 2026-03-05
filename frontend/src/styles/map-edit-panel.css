@@ -1,0 +1,213 @@
+/* ============================================
+   MAP EDIT PANEL STYLES
+   ============================================ */
+
+.map-edit-panel {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  min-width: 400px;
+  max-width: 600px;
+  z-index: 1000;
+  font-size: 13px;
+}
+
+.map-edit-panel .panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  border-bottom: 1px solid #dee2e6;
+  background: #f8f9fa;
+  border-radius: 8px 8px 0 0;
+}
+
+.map-edit-panel .panel-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #2c3e50;
+}
+
+.map-edit-panel .close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  line-height: 1;
+  color: #6c757d;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.map-edit-panel .close-btn:hover {
+  background: #dee2e6;
+  color: #2c3e50;
+}
+
+.map-edit-panel .panel-content {
+  padding: 16px;
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.map-edit-panel .tool-section {
+  margin-bottom: 20px;
+}
+
+.map-edit-panel .tool-section:last-child {
+  margin-bottom: 0;
+}
+
+.map-edit-panel .tool-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: #6c757d;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.map-edit-panel .tool-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+  gap: 8px;
+}
+
+.map-edit-panel .tool-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 8px;
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s;
+  min-height: 70px;
+}
+
+.map-edit-panel .tool-button:hover {
+  background: #e7f1ff;
+  border-color: var(--secondary-color);
+  transform: translateY(-2px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.map-edit-panel .tool-button.active {
+  background: var(--secondary-color);
+  border-color: var(--secondary-color);
+  color: white;
+}
+
+.map-edit-panel .tool-button.active .tool-label {
+  color: white;
+}
+
+.map-edit-panel .tool-icon {
+  font-size: 24px;
+  margin-bottom: 6px;
+  line-height: 1;
+}
+
+.map-edit-panel .tool-label {
+  font-size: 11px;
+  font-weight: 500;
+  text-align: center;
+  color: #495057;
+}
+
+.map-edit-panel .tool-options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.map-edit-panel .option-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.map-edit-panel .option-item input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+}
+
+.map-edit-panel .option-item span {
+  font-size: 13px;
+  color: #495057;
+}
+
+.map-edit-panel .info-section {
+  background: #e7f1ff;
+  padding: 12px;
+  border-radius: 6px;
+}
+
+.map-edit-panel .tool-info p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+  color: #2c3e50;
+}
+
+.map-edit-panel .tool-info p:last-child {
+  margin-bottom: 0;
+}
+
+.map-edit-panel .tool-info small {
+  font-size: 11px;
+  color: #6c757d;
+  font-style: italic;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .map-edit-panel {
+    left: 8px;
+    right: 8px;
+    bottom: 70px;
+    transform: none;
+    min-width: auto;
+    max-width: none;
+  }
+
+  .map-edit-panel .tool-grid {
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 6px;
+  }
+
+  .map-edit-panel .tool-button {
+    min-height: 60px;
+    padding: 8px 6px;
+  }
+
+  .map-edit-panel .tool-icon {
+    font-size: 20px;
+    margin-bottom: 4px;
+  }
+
+  .map-edit-panel .tool-label {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 480px) {
+  .map-edit-panel .tool-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

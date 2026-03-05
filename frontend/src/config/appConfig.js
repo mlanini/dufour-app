@@ -1,0 +1,191 @@
+/**
+ * dufour.app Configuration
+ * Based on QWC2 with KADAS-inspired customizations
+ */
+
+export default {
+  // Application metadata
+  appName: 'dufour.app',
+  appVersion: '0.1.0',
+  
+  // Initial map view (Switzerland center)
+  initialView: {
+    center: [830000, 5933000], // Swiss coordinates in EPSG:3857
+    zoom: 8,
+    crs: 'EPSG:3857'
+  },
+
+  // Map configuration
+  map: {
+    projection: 'EPSG:3857',
+    extent: [664577, 5753148, 1167741, 6075303], // Switzerland bounds
+    constrainExtent: false,
+    scales: [
+      1000000, 750000, 500000, 250000, 100000, 50000, 25000, 
+      10000, 7500, 5000, 2500, 1000, 500, 250, 100
+    ],
+    defaultFeatureStyle: {
+      strokeColor: [0, 0, 255, 1],
+      strokeWidth: 2,
+      fillColor: [0, 0, 255, 0.2],
+      circleRadius: 5
+    }
+  },
+
+  // Theme configuration
+  themes: {
+    title: 'root',
+    subdirs: [],
+    items: [
+      {
+        id: 'dufour',
+        title: 'dufour.app',
+        description: 'Main map theme',
+        attribution: {
+          Title: 'dufour.app',
+          OnlineResource: 'https://dufour.app'
+        },
+        bbox: {
+          crs: 'EPSG:3857',
+          bounds: [664577, 5753148, 1167741, 6075303]
+        },
+        initialBbox: {
+          crs: 'EPSG:3857',
+          bounds: [664577, 5753148, 1167741, 6075303]
+        },
+        mapCrs: 'EPSG:3857',
+        availableCRS: ['EPSG:3857', 'EPSG:4326', 'EPSG:2056'],
+        scales: [1000000, 750000, 500000, 250000, 100000, 50000, 25000, 10000, 7500, 5000, 2500, 1000, 500, 250, 100],
+        backgroundLayers: [
+          {
+            name: 'swisstopo_national_map',
+            title: 'SwissTopo National Map',
+            type: 'wmts',
+            url: 'https://wmts.geo.admin.ch/1.0.0/{Layer}/default/current/3857/{TileMatrix}/{TileRow}/{TileCol}.jpeg',
+            capabilitiesUrl: 'https://wmts.geo.admin.ch/1.0.0/WMTSCapabilities.xml',
+            tileMatrixSet: '3857',
+            originX: -20037508.34,
+            originY: 20037508.34,
+            projection: 'EPSG:3857',
+            tileSize: [256, 256],
+            resolutions: [
+              4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 
+              1000, 750, 650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1.5, 1, 0.5
+            ],
+            visibility: true,
+            thumbnail: 'swisstopo_thumbnail.png'
+          },
+          {
+            name: 'swissimage',
+            title: 'SwissImage Aerial',
+            type: 'wmts',
+            url: 'https://wmts.geo.admin.ch/1.0.0/{Layer}/default/current/3857/{TileMatrix}/{TileRow}/{TileCol}.jpeg',
+            capabilitiesUrl: 'https://wmts.geo.admin.ch/1.0.0/WMTSCapabilities.xml',
+            tileMatrixSet: '3857',
+            originX: -20037508.34,
+            originY: 20037508.34,
+            projection: 'EPSG:3857',
+            tileSize: [256, 256],
+            resolutions: [
+              4000, 3750, 3500, 3250, 3000, 2750, 2500, 2250, 2000, 1750, 1500, 1250, 
+              1000, 750, 650, 500, 250, 100, 50, 20, 10, 5, 2.5, 2, 1.5, 1, 0.5
+            ],
+            visibility: false,
+            thumbnail: 'swissimage_thumbnail.png'
+          }
+        ],
+        drawingOrder: ['background', 'layer', 'redlining', 'selection']
+      }
+    ],
+    defaultTheme: 'dufour'
+  },
+
+  // Locale configuration
+  locale: {
+    supportedLocales: ['en-US', 'de-CH', 'fr-FR', 'it-IT'],
+    fallbackLocale: 'en-US',
+    defaultLocale: 'en-US'
+  },
+
+  // Plugin configuration
+  plugins: {
+    common: [],
+    mobile: [],
+    desktop: [
+      'Map',
+      'HomeButton',
+      'LocateButton',
+      'ZoomIn',
+      'ZoomOut',
+      'BackgroundSwitcher',
+      'TopBar',
+      'BottomBar',
+      'LayerTree',
+      'Identify',
+      'MapTip',
+      'Share',
+      'MapCopyright',
+      'Print',
+      'ThemeSwitcher',
+      'Measure',
+      'RedliningSupport',
+      'Editing',
+      'MapExport',
+      'ImportLayer',
+      'Search',
+      'Settings'
+    ]
+  },
+
+  // Service URLs
+  services: {
+    qgisServer: import.meta.env.VITE_QGIS_SERVER_URL || '/qgis',
+    searchService: 'https://api3.geo.admin.ch/rest/services/api/SearchServer',
+    elevationService: 'https://api3.geo.admin.ch/rest/services/height',
+    featureInfoService: '/qgis'
+  },
+
+  // Search providers
+  searchProviders: {
+    coordinates: {
+      enabled: true,
+      labelmsgid: 'search.coordinates'
+    },
+    nominatim: {
+      enabled: false
+    },
+    geoadmin: {
+      enabled: true,
+      url: 'https://api3.geo.admin.ch/rest/services/api/SearchServer',
+      params: {
+        origins: 'address,parcel',
+        limit: 20
+      }
+    }
+  },
+
+  // Redlining configuration
+  redlining: {
+    allowGeometryLabels: true,
+    snapping: true,
+    snappingActive: false
+  },
+
+  // Measurement configuration
+  measurement: {
+    geodesic: true
+  },
+
+  // Print configuration
+  print: {
+    scaleFactor: 1.0,
+    dpis: [96, 150, 300],
+    defaultDpi: 300
+  },
+
+  // Import/Export
+  importExport: {
+    allowedFormats: ['geojson', 'kml', 'gpx', 'json'],
+    maxFileSize: 10485760 // 10 MB
+  }
+};

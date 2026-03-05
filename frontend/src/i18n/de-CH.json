@@ -1,0 +1,85 @@
+{
+  "locale": "de-CH",
+  "messages": {
+    "app": {
+      "title": "dufour.app",
+      "subtitle": "Web-GIS-Plattform",
+      "loading": "Wird geladen..."
+    },
+    "map": {
+      "loading": "Karte wird geladen...",
+      "zoom_in": "Vergrössern",
+      "zoom_out": "Verkleinern",
+      "home": "Startansicht",
+      "locate": "Mein Standort"
+    },
+    "layers": {
+      "title": "Ebenen",
+      "background": "Hintergrund",
+      "overlays": "Überlagerungen",
+      "add_layer": "Ebene hinzufügen",
+      "remove_layer": "Ebene entfernen",
+      "layer_properties": "Ebeneneigenschaften",
+      "opacity": "Deckkraft",
+      "visibility": "Sichtbarkeit"
+    },
+    "tools": {
+      "measure": "Messen",
+      "measure_distance": "Distanz messen",
+      "measure_area": "Fläche messen",
+      "measure_angle": "Winkel messen",
+      "redlining": "Zeichnen",
+      "redlining_point": "Punkt zeichnen",
+      "redlining_line": "Linie zeichnen",
+      "redlining_polygon": "Polygon zeichnen",
+      "redlining_text": "Text hinzufügen",
+      "identify": "Identifizieren",
+      "search": "Suchen",
+      "print": "Drucken",
+      "export": "Exportieren",
+      "import": "Importieren"
+    },
+    "search": {
+      "placeholder": "Ort, Adresse suchen...",
+      "no_results": "Keine Resultate gefunden",
+      "coordinates": "Koordinaten"
+    },
+    "military": {
+      "symbols": "Militärsymbole",
+      "scenario": "Szenario",
+      "units": "Einheiten",
+      "add_unit": "Einheit hinzufügen",
+      "edit_unit": "Einheit bearbeiten",
+      "delete_unit": "Einheit löschen"
+    },
+    "terrain": {
+      "analysis": "Geländeanalyse",
+      "slope": "Hangneigung",
+      "viewshed": "Sichtbarkeit",
+      "profile": "Höhenprofil"
+    },
+    "gpx": {
+      "import": "GPX importieren",
+      "export": "GPX exportieren",
+      "tracks": "Tracks",
+      "waypoints": "Wegpunkte",
+      "routes": "Routen"
+    },
+    "common": {
+      "ok": "OK",
+      "cancel": "Abbrechen",
+      "close": "Schliessen",
+      "save": "Speichern",
+      "delete": "Löschen",
+      "edit": "Bearbeiten",
+      "add": "Hinzufügen",
+      "remove": "Entfernen",
+      "yes": "Ja",
+      "no": "Nein",
+      "error": "Fehler",
+      "warning": "Warnung",
+      "info": "Information",
+      "success": "Erfolg"
+    }
+  }
+}

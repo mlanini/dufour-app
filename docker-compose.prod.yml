@@ -1,0 +1,78 @@
+version: '3.8'
+
+services:
+  # PostgreSQL with PostGIS
+  postgis:
+    image: postgis/postgis:15-3.4-alpine
+    container_name: dufour-postgis-prod
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-gisdb}
+      POSTGRES_USER: ${POSTGRES_USER:-gisuser}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - postgis-data:/var/lib/postgresql/data
+      - ./postgis/init:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-gisuser} -d ${POSTGRES_DB:-gisdb}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - dufour-network
+    restart: unless-stopped
+
+  # QGIS Server
+  qgis-server:
+    image: openquake/qgis-server:stable
+    container_name: dufour-qgis-prod
+    environment:
+      QGIS_SERVER_LOG_LEVEL: 1
+      QGIS_SERVER_LOG_STDERR: 1
+      QGIS_PROJECT_FILE: /data/projects/dufour.qgs
+      PGSERVICEFILE: /data/pg_service.conf
+      QGIS_SERVER_PARALLEL_RENDERING: 1
+      MAX_CACHE_LAYERS: 100
+    volumes:
+      - ./qgis-server/projects:/data/projects:ro
+      - ./qgis-server/plugins:/usr/share/qgis/python/plugins:ro
+      - ./qgis-server/pg_service.conf:/data/pg_service.conf:ro
+    depends_on:
+      postgis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/cgi-bin/qgis_mapserv.fcgi?SERVICE=WMS&REQUEST=GetCapabilities"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - dufour-network
+    restart: unless-stopped
+
+  # Nginx with built frontend
+  nginx:
+    build:
+      context: .
+      dockerfile: Dockerfile.prod
+    container_name: dufour-nginx-prod
+    ports:
+      - "${PORT:-80}:80"
+    environment:
+      QGIS_SERVER_URL: http://qgis-server/cgi-bin/qgis_mapserv.fcgi
+    depends_on:
+      - qgis-server
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - dufour-network
+    restart: unless-stopped
+
+volumes:
+  postgis-data:
+    driver: local
+
+networks:
+  dufour-network:
+    driver: bridge

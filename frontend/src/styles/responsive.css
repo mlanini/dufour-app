@@ -1,0 +1,436 @@
+/* ============================================
+   RESPONSIVE & MOBILE-FRIENDLY STYLES
+   dufour.app - Enhanced for tablets and mobile devices
+   ============================================ */
+
+/* ============================================
+   TABLET (PORTRAIT) - iPad, Android Tablets
+   ============================================ */
+@media (max-width: 1024px) and (min-width: 769px) {
+  .ribbon-content {
+    padding: 6px 8px;
+    gap: 10px;
+  }
+  
+  .side-panel {
+    max-width: 350px;
+    min-width: 280px;
+  }
+  
+  .ribbon-quick-action {
+    padding: 3px 8px;
+    font-size: 12px;
+  }
+  
+  .ribbon-tool {
+    width: 56px;
+    height: 56px;
+    min-width: 56px;
+    min-height: 56px;
+    max-width: 56px;
+    max-height: 56px;
+  }
+}
+
+/* ============================================
+   MOBILE (LANDSCAPE & PORTRAIT) - Smartphones
+   ============================================ */
+@media (max-width: 768px) {
+  /* Toolbar adjustments */
+  .ribbon-toolbar {
+    min-height: auto;
+  }
+  
+  .ribbon-top-bar {
+    padding: 4px 8px;
+    min-height: 36px;
+  }
+  
+  .ribbon-app-title {
+    font-size: 14px;
+  }
+  
+  /* Tabs */
+  .ribbon-tabs {
+    padding: 0 8px;
+    gap: 1px;
+  }
+  
+  .ribbon-tab {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+  
+  /* Ribbon content */
+  .ribbon-content {
+    padding: 6px 8px;
+    min-height: 60px;
+    gap: 8px;
+  }
+  
+  /* Tools */
+  .ribbon-tool {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    min-height: 52px;
+    max-width: 52px;
+    max-height: 52px;
+    padding: 4px;
+  }
+  
+  .ribbon-tool-icon {
+    font-size: 20px;
+  }
+  
+  .ribbon-tool-label {
+    font-size: 10px;
+  }
+  
+  .ribbon-tool.large {
+    width: 60px;
+    height: 60px;
+    min-width: 60px;
+    min-height: 60px;
+    max-width: 60px;
+    max-height: 60px;
+  }
+  
+  .ribbon-tool.large .ribbon-tool-icon {
+    font-size: 24px;
+  }
+  
+  /* Side panels - Full screen overlay */
+  .side-panel {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 100%;
+    min-width: 100%;
+    z-index: 500;
+    box-shadow: none;
+  }
+  
+  .side-panel.left {
+    border-right: none;
+  }
+  
+  .side-panel.right {
+    border-left: none;
+  }
+  
+  .side-panel-header {
+    padding: 12px;
+    font-size: 16px;
+  }
+  
+  .side-panel-close {
+    font-size: 28px;
+    padding: 4px 8px;
+  }
+  
+  .side-panel-content {
+    padding: 12px;
+  }
+  
+  /* Status bar */
+  .status-bar {
+    font-size: 11px;
+    padding: 4px 8px;
+    min-height: 28px;
+  }
+  
+  .status-bar-left,
+  .status-bar-right {
+    gap: 8px;
+  }
+  
+  .status-bar-center {
+    display: none;
+  }
+  
+  .status-item {
+    gap: 3px;
+  }
+}
+
+/* ============================================
+   SMALL MOBILE - iPhone SE, Small Android
+   ============================================ */
+@media (max-width: 480px) {
+  /* Hide app name on very small screens */
+  .ribbon-app-title span:last-child {
+    display: none;
+  }
+  
+  .ribbon-app-title svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Compact quick actions */
+  .ribbon-quick-actions {
+    gap: 4px;
+  }
+  
+  .ribbon-quick-action {
+    padding: 6px;
+    font-size: 0;
+    min-width: 36px;
+    min-height: 36px;
+  }
+  
+  .ribbon-quick-action svg {
+    width: 18px;
+    height: 18px;
+  }
+  
+  /* Compact tabs */
+  .ribbon-tabs {
+    padding: 0 4px;
+    gap: 0;
+  }
+  
+  .ribbon-tab {
+    padding: 6px 8px;
+    font-size: 11px;
+  }
+  
+  /* Compact ribbon content */
+  .ribbon-content {
+    padding: 4px;
+    min-height: 56px;
+    gap: 6px;
+  }
+  
+  .ribbon-group {
+    padding-right: 6px;
+    min-width: auto;
+  }
+  
+  .ribbon-group-label {
+    display: none;
+  }
+  
+  /* Icon-only tools */
+  .ribbon-tool {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+    padding: 6px;
+  }
+  
+  .ribbon-tool-label {
+    display: none;
+  }
+  
+  .ribbon-tool-icon {
+    margin-bottom: 0;
+    font-size: 22px;
+  }
+  
+  .ribbon-tool.large {
+    width: 52px;
+    height: 52px;
+    min-width: 52px;
+    min-height: 52px;
+    max-width: 52px;
+    max-height: 52px;
+  }
+  
+  .ribbon-tool.large .ribbon-tool-icon {
+    font-size: 26px;
+  }
+  
+  /* Compact status bar */
+  .status-bar {
+    font-size: 10px;
+    padding: 3px 6px;
+    min-height: 24px;
+    gap: 6px;
+  }
+  
+  .status-bar-left .status-item:nth-child(n+2) {
+    display: none;
+  }
+  
+  .status-bar-right .status-item:nth-child(n+2) {
+    display: none;
+  }
+  
+  .status-item {
+    gap: 2px;
+  }
+}
+
+/* ============================================
+   EXTRA SMALL - iPhone SE 1st gen, Small devices
+   ============================================ */
+@media (max-width: 375px) {
+  .ribbon-top-bar {
+    padding: 3px 6px;
+    min-height: 32px;
+  }
+  
+  .ribbon-tabs {
+    padding: 0 2px;
+  }
+  
+  .ribbon-tab {
+    padding: 5px 6px;
+    font-size: 10px;
+  }
+  
+  .ribbon-content {
+    padding: 3px;
+    min-height: 52px;
+  }
+  
+  .ribbon-tool {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    max-width: 44px;
+    max-height: 44px;
+    padding: 4px;
+  }
+  
+  .ribbon-tool-icon {
+    font-size: 20px;
+  }
+}
+
+/* ============================================
+   TOUCH DEVICES - All touch-enabled devices
+   ============================================ */
+@media (hover: none) and (pointer: coarse) {
+  /* Larger tap targets */
+  .ribbon-tool {
+    min-width: 48px;
+    min-height: 48px;
+    padding: 6px;
+  }
+  
+  .ribbon-tab {
+    padding: 8px 14px;
+    min-height: 40px;
+  }
+  
+  .side-panel-close {
+    padding: 10px;
+    font-size: 28px;
+    min-width: 48px;
+    min-height: 48px;
+  }
+  
+  button:not(.compact) {
+    min-height: 48px;
+    min-width: 48px;
+  }
+  
+  /* Prevent double-tap zoom */
+  * {
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+  }
+  
+  /* Smooth touch scrolling */
+  .ribbon-content,
+  .ribbon-tabs,
+  .side-panel-content {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+  }
+}
+
+/* ============================================
+   LANDSCAPE ORIENTATION - Mobile landscape
+   ============================================ */
+@media (max-width: 768px) and (orientation: landscape) {
+  .ribbon-toolbar {
+    min-height: auto;
+  }
+  
+  .ribbon-content {
+    min-height: 52px;
+    padding: 4px 8px;
+  }
+  
+  .ribbon-tool {
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    max-width: 48px;
+    max-height: 48px;
+  }
+  
+  .side-panel-header {
+    padding: 8px 12px;
+  }
+  
+  .side-panel-content {
+    padding: 8px;
+  }
+  
+  .status-bar {
+    min-height: 24px;
+    padding: 2px 8px;
+  }
+}
+
+/* ============================================
+   HIGH DPI / RETINA DISPLAYS
+   ============================================ */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .ribbon-tool-icon svg,
+  .ribbon-tool-icon img {
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+  }
+}
+
+/* ============================================
+   DARK MODE SUPPORT (Future)
+   ============================================ */
+@media (prefers-color-scheme: dark) {
+  /* Placeholder for dark mode styles */
+  /* Will be implemented in future version */
+}
+
+/* ============================================
+   REDUCED MOTION - Accessibility
+   ============================================ */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ============================================
+   PRINT STYLES
+   ============================================ */
+@media print {
+  .ribbon-toolbar,
+  .side-panel,
+  .status-bar {
+    display: none !important;
+  }
+  
+  .map-container {
+    width: 100% !important;
+    height: 100% !important;
+  }
+  
+  .app-main {
+    flex-direction: column;
+  }
+}

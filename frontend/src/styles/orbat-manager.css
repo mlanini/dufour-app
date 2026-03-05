@@ -1,0 +1,525 @@
+/**
+ * ORBAT Manager Styles
+ * 
+ * Hierarchical tree view with drag & drop, context menu, and responsive design.
+ */
+
+.orbat-manager {
+    position: fixed;
+    right: 20px;
+    top: 80px;
+    width: 400px;
+    max-height: calc(100vh - 140px);
+    background: rgba(30, 30, 30, 0.95);
+    border: 2px solid #3498db;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(10px);
+}
+
+/* Header */
+.orbat-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border-radius: 6px 6px 0 0;
+    color: white;
+}
+
+.orbat-header h2 {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.orbat-close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.orbat-close-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+/* Toolbar */
+.orbat-toolbar {
+    display: flex;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    flex-wrap: wrap;
+}
+
+.orbat-toolbar button {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 4px;
+    color: white;
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.orbat-toolbar button:hover:not(:disabled) {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+.orbat-toolbar button:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.orbat-toolbar button.deploy-btn {
+    background: #27ae60;
+    border-color: #229954;
+}
+
+.orbat-toolbar button.deploy-btn:hover:not(:disabled) {
+    background: #2ecc71;
+}
+
+/* Tree View */
+.orbat-tree-view {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px;
+    min-height: 200px;
+}
+
+.orbat-tree-view::-webkit-scrollbar {
+    width: 8px;
+}
+
+.orbat-tree-view::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.2);
+}
+
+.orbat-tree-view::-webkit-scrollbar-thumb {
+    background: rgba(52, 152, 219, 0.5);
+    border-radius: 4px;
+}
+
+.orbat-tree-view::-webkit-scrollbar-thumb:hover {
+    background: rgba(52, 152, 219, 0.7);
+}
+
+/* Tree Node */
+.orbat-tree-node {
+    margin: 0;
+    user-select: none;
+}
+
+.orbat-node-content {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    margin-bottom: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+
+.orbat-node-content:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(52, 152, 219, 0.5);
+    transform: translateX(2px);
+}
+
+.orbat-node-content.selected {
+    background: rgba(52, 152, 219, 0.3);
+    border-color: #3498db;
+    box-shadow: 0 0 8px rgba(52, 152, 219, 0.5);
+}
+
+.orbat-node-content.dragging {
+    opacity: 0.5;
+    cursor: move;
+}
+
+/* Expand Button */
+.orbat-expand-btn {
+    background: none;
+    border: none;
+    color: rgba(255, 255, 255, 0.6);
+    cursor: pointer;
+    padding: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 10px;
+    transition: color 0.2s;
+}
+
+.orbat-expand-btn:hover {
+    color: white;
+}
+
+.orbat-expand-spacer {
+    width: 16px;
+}
+
+/* Echelon Icon */
+.orbat-echelon-icon {
+    font-size: 16px;
+    min-width: 24px;
+    text-align: center;
+}
+
+/* Unit Name */
+.orbat-unit-name {
+    flex: 1;
+    color: white;
+    font-size: 14px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* Unit Badge (children count) */
+.orbat-unit-badge {
+    background: rgba(52, 152, 219, 0.6);
+    color: white;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+    min-width: 20px;
+    text-align: center;
+}
+
+/* Affiliation Indicator */
+.orbat-affiliation-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.orbat-affiliation-indicator.friend {
+    background: #3498db;
+}
+
+.orbat-affiliation-indicator.hostile {
+    background: #e74c3c;
+}
+
+.orbat-affiliation-indicator.neutral {
+    background: #2ecc71;
+}
+
+.orbat-affiliation-indicator.unknown {
+    background: #f39c12;
+}
+
+/* Children Container */
+.orbat-children {
+    position: relative;
+    padding-left: 0;
+}
+
+/* Connecting Lines */
+.orbat-children::before {
+    content: '';
+    position: absolute;
+    left: 10px;
+    top: 0;
+    bottom: 0;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Empty State */
+.orbat-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    color: rgba(255, 255, 255, 0.6);
+    text-align: center;
+}
+
+.orbat-empty-state p {
+    margin: 0 0 16px 0;
+    font-size: 15px;
+}
+
+.orbat-empty-state button {
+    padding: 10px 20px;
+    background: #3498db;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.orbat-empty-state button:hover {
+    background: #2980b9;
+}
+
+/* Bottom Panel */
+.orbat-bottom-panel {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    gap: 12px;
+}
+
+.orbat-stats {
+    display: flex;
+    gap: 16px;
+    flex: 1;
+}
+
+.orbat-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.stat-label {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+}
+
+.stat-value {
+    font-size: 16px;
+    color: #3498db;
+    font-weight: 600;
+}
+
+.orbat-edit-details-btn {
+    padding: 8px 16px;
+    background: #3498db;
+    border: none;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+    font-size: 13px;
+    transition: background 0.2s;
+}
+
+.orbat-edit-details-btn:hover {
+    background: #2980b9;
+}
+
+/* Context Menu */
+.orbat-context-menu {
+    position: fixed;
+    background: rgba(40, 40, 40, 0.98);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 6px;
+    padding: 6px;
+    min-width: 180px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    z-index: 10000;
+    backdrop-filter: blur(10px);
+}
+
+.orbat-context-menu button {
+    display: block;
+    width: 100%;
+    padding: 8px 12px;
+    background: none;
+    border: none;
+    color: white;
+    text-align: left;
+    cursor: pointer;
+    font-size: 13px;
+    border-radius: 4px;
+    transition: background 0.2s;
+}
+
+.orbat-context-menu button:hover:not(:disabled) {
+    background: rgba(52, 152, 219, 0.3);
+}
+
+.orbat-context-menu button:disabled {
+    color: rgba(255, 255, 255, 0.3);
+    cursor: not-allowed;
+}
+
+.orbat-context-menu hr {
+    border: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    margin: 6px 0;
+}
+
+/* Editor Modal */
+.orbat-editor-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    backdrop-filter: blur(5px);
+}
+
+.orbat-editor-content {
+    max-width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+    background: #2c3e50;
+    border-radius: 8px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .orbat-manager {
+        right: 10px;
+        left: 10px;
+        width: auto;
+        top: 60px;
+    }
+    
+    .orbat-toolbar {
+        gap: 6px;
+    }
+    
+    .orbat-toolbar button {
+        font-size: 11px;
+        padding: 6px 10px;
+    }
+    
+    .orbat-unit-name {
+        font-size: 13px;
+    }
+    
+    .orbat-stats {
+        flex-direction: column;
+        gap: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    .orbat-manager {
+        top: 50px;
+        max-height: calc(100vh - 90px);
+    }
+    
+    .orbat-header h2 {
+        font-size: 16px;
+    }
+    
+    .orbat-toolbar {
+        flex-wrap: wrap;
+    }
+    
+    .orbat-bottom-panel {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .orbat-stats {
+        flex-direction: row;
+        justify-content: space-around;
+    }
+    
+    .orbat-edit-details-btn {
+        width: 100%;
+    }
+}
+
+/* Touch Devices */
+@media (hover: none) and (pointer: coarse) {
+    .orbat-node-content {
+        padding: 12px;
+        min-height: 48px;
+    }
+    
+    .orbat-toolbar button {
+        min-height: 44px;
+        padding: 8px 14px;
+    }
+    
+    .orbat-context-menu button {
+        min-height: 44px;
+        padding: 12px;
+    }
+}
+
+/* Drag Preview */
+.orbat-node-content:active {
+    cursor: grabbing;
+}
+
+/* Animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+.orbat-manager {
+    animation: slideIn 0.3s ease-out;
+}
+
+/* Print Styles */
+@media print {
+    .orbat-manager {
+        position: static;
+        width: 100%;
+        max-height: none;
+        background: white;
+        border: 1px solid black;
+    }
+    
+    .orbat-toolbar,
+    .orbat-close-btn,
+    .orbat-edit-details-btn,
+    .orbat-context-menu {
+        display: none;
+    }
+    
+    .orbat-node-content {
+        background: white;
+        border-color: black;
+        color: black;
+    }
+    
+    .orbat-unit-name {
+        color: black;
+    }
+}

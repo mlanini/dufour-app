@@ -1,0 +1,1529 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>dufour.app - Mockup</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@9.1.0/ol.css">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --background-color: #ecf0f1;
+            --text-color: #2c3e50;
+            --border-color: #bdc3c7;
+        }
+
+        /* Splash Screen */
+        .splash-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        .splash-screen.fade-out {
+            animation: fadeOut 0.5s ease-out forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .splash-logo {
+            width: 120px;
+            height: 120px;
+            margin-bottom: 24px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .splash-title {
+            font-size: 48px;
+            font-weight: 700;
+            color: white;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .splash-subtitle {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 32px;
+        }
+
+        .splash-mockup-badge {
+            background: rgba(231, 76, 60, 0.95);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-size: 16px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 4px 15px rgba(231, 76, 60, 0.4);
+            margin-bottom: 24px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .splash-description {
+            max-width: 600px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 32px;
+            padding: 0 20px;
+        }
+
+        .splash-loader {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .splash-version {
+            position: absolute;
+            bottom: 30px;
+            color: rgba(255, 255, 255, 0.7);
+            font-size: 12px;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            width: 100vw;
+        }
+
+        /* Ribbon Toolbar */
+        .ribbon-toolbar {
+            background: linear-gradient(to bottom, #f8f9fa 0%, #e9ecef 100%);
+            border-bottom: 2px solid #dee2e6;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .ribbon-top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 6px 12px;
+            background-color: var(--primary-color);
+            color: white;
+            min-height: 36px;
+        }
+
+        .ribbon-app-title {
+            font-size: 16px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .ribbon-quick-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .ribbon-quick-action {
+            padding: 4px 12px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+            color: white;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ribbon-quick-action:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .ribbon-tabs {
+            display: flex;
+            gap: 2px;
+            padding: 0 12px;
+            background-color: #dee2e6;
+            overflow-x: auto;
+        }
+
+        .ribbon-tab {
+            padding: 6px 20px;
+            background-color: #e9ecef;
+            border: 1px solid #ced4da;
+            border-bottom: none;
+            border-radius: 4px 4px 0 0;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            color: #495057;
+            transition: all 0.2s;
+            white-space: nowrap;
+            user-select: none;
+        }
+
+        .ribbon-tab:hover {
+            background-color: #f1f3f5;
+            color: var(--primary-color);
+        }
+
+        .ribbon-tab.active {
+            background-color: #f8f9fa;
+            color: var(--primary-color);
+            border-color: #adb5bd;
+            font-weight: 600;
+        }
+
+        .ribbon-content {
+            display: flex;
+            padding: 8px 12px;
+            gap: 12px;
+            overflow-x: auto;
+            background-color: #f8f9fa;
+            min-height: 68px;
+            align-items: stretch;
+        }
+
+        .ribbon-group {
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid #dee2e6;
+            padding-right: 12px;
+            min-width: 100px;
+        }
+
+        .ribbon-group:last-child {
+            border-right: none;
+        }
+
+        .ribbon-group-label {
+            font-size: 11px;
+            color: #6c757d;
+            text-align: center;
+            margin-top: 4px;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        .ribbon-group-tools {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex: 1;
+            align-items: center;
+        }
+
+        .ribbon-tool {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            min-height: 64px;
+            max-width: 64px;
+            max-height: 64px;
+        }
+
+        .ribbon-tool:hover {
+            background: #e7f1ff;
+            border-color: var(--secondary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .ribbon-tool.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .ribbon-tool-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .ribbon-tool-label {
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.2;
+            font-weight: 500;
+        }
+
+        .ribbon-tool.large {
+            min-width: 80px;
+            min-height: 58px;
+        }
+
+        .ribbon-tool.large .ribbon-tool-icon {
+            font-size: 32px;
+        }
+
+        /* Edit Mode Switcher (integrated in ribbon) */
+        .ribbon-mode-switcher-group {
+            margin-left: auto;
+            border-left: 2px solid var(--border-color);
+            padding-left: 12px;
+        }
+
+        .edit-mode-switcher {
+            display: flex;
+            gap: 4px;
+            flex-wrap: wrap;
+            justify-content: center;
+            flex: 1;
+            align-items: center;
+        }
+
+        .edit-mode-switcher .mode-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 6px;
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+            width: 64px;
+            height: 64px;
+            min-width: 64px;
+            min-height: 64px;
+            max-width: 64px;
+            max-height: 64px;
+        }
+
+        .edit-mode-switcher .mode-btn:hover {
+            background: #e7f1ff;
+            border-color: var(--secondary-color);
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .edit-mode-switcher .mode-btn.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .edit-mode-switcher .mode-btn .ribbon-tool-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+            line-height: 1;
+        }
+
+        .edit-mode-switcher .mode-btn .ribbon-tool-label {
+            font-size: 11px;
+            text-align: center;
+            line-height: 1.2;
+            font-weight: 500;
+        }
+
+        /* Map Edit Panel */
+        .map-edit-panel {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            width: 90%;
+            max-width: 600px;
+            min-width: 400px;
+        }
+
+        .map-edit-panel.hidden {
+            display: none;
+        }
+
+        .map-edit-panel-header {
+            padding: 12px 16px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .map-edit-panel-title {
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .map-edit-panel-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .map-edit-panel-content {
+            padding: 16px;
+        }
+
+        .tool-section {
+            margin-bottom: 16px;
+        }
+
+        .tool-section-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+        }
+
+        .tool-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+            gap: 8px;
+        }
+
+        .tool-btn {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 8px;
+            background: white;
+            border: 2px solid #dee2e6;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 64px;
+        }
+
+        .tool-btn:hover {
+            background: #e7f1ff;
+            border-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .tool-btn.active {
+            background: var(--secondary-color);
+            color: white;
+            border-color: var(--secondary-color);
+        }
+
+        .tool-btn-icon {
+            font-size: 24px;
+            margin-bottom: 4px;
+        }
+
+        .tool-btn-label {
+            font-size: 11px;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        /* Grid Edit Panel */
+        .grid-edit-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: white;
+        }
+
+        .grid-edit-panel.hidden {
+            display: none;
+        }
+
+        .grid-edit-header {
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .grid-edit-search {
+            padding: 6px 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+            width: 250px;
+        }
+
+        .grid-edit-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .grid-edit-table-container {
+            flex: 1;
+            overflow: auto;
+        }
+
+        .grid-edit-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .grid-edit-table thead {
+            position: sticky;
+            top: 0;
+            background: #f8f9fa;
+            z-index: 10;
+        }
+
+        .grid-edit-table th {
+            padding: 10px 12px;
+            text-align: left;
+            font-weight: 600;
+            border-bottom: 2px solid #dee2e6;
+            white-space: nowrap;
+        }
+
+        .grid-edit-table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .grid-edit-table tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .grid-edit-table tbody tr.selected {
+            background: #e7f1ff;
+        }
+
+        /* Chart Edit Panel */
+        .chart-edit-panel {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            background: white;
+        }
+
+        .chart-edit-panel.hidden {
+            display: none;
+        }
+
+        .chart-edit-toolbar {
+            padding: 8px 12px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+
+        .chart-edit-canvas {
+            flex: 1;
+            overflow: auto;
+            position: relative;
+            background: repeating-linear-gradient(
+                0deg,
+                #f8f9fa 0px,
+                #f8f9fa 1px,
+                transparent 1px,
+                transparent 20px
+            ),
+            repeating-linear-gradient(
+                90deg,
+                #f8f9fa 0px,
+                #f8f9fa 1px,
+                transparent 1px,
+                transparent 20px
+            );
+        }
+
+        .chart-node {
+            min-width: 200px;
+            padding: 12px;
+            background: white;
+            border: 3px solid #dee2e6;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin: 20px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .chart-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        .chart-node.selected {
+            border-width: 4px;
+            border-color: var(--secondary-color);
+            background: #e7f1ff;
+        }
+
+        .chart-node-header {
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .chart-node-info {
+            font-size: 12px;
+            color: #6c757d;
+        }
+
+        /* Main Content */
+        .app-main {
+            display: flex;
+            flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .map-container {
+            flex: 1;
+            position: relative;
+            background-color: #e9ecef;
+        }
+
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Side Panel */
+        .side-panel {
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            z-index: 100;
+            max-width: 350px;
+            min-width: 300px;
+            transition: all 0.3s;
+        }
+
+        .side-panel.hidden {
+            display: none;
+        }
+
+        .side-panel.left {
+            border-right: 1px solid #dee2e6;
+        }
+
+        .side-panel.right {
+            border-left: 1px solid #dee2e6;
+        }
+
+        .side-panel-header {
+            padding: 12px;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .side-panel-title {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .side-panel-close {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            padding: 0 6px;
+            line-height: 1;
+        }
+
+        .side-panel-close:hover {
+            opacity: 0.8;
+        }
+
+        .side-panel-content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 12px;
+        }
+
+        /* Status Bar */
+        .status-bar {
+            background: #f8f9fa;
+            border-top: 1px solid #dee2e6;
+            padding: 4px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            color: #6c757d;
+            min-height: 28px;
+        }
+
+        .status-bar-left,
+        .status-bar-center,
+        .status-bar-right {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .status-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .status-item-label {
+            font-weight: 500;
+            color: #495057;
+        }
+
+        .status-item-value {
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Panel Content Styles */
+        .panel-section {
+            margin-bottom: 16px;
+        }
+
+        .panel-section h4 {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .layer-item {
+            display: flex;
+            align-items: center;
+            padding: 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 4px;
+        }
+
+        .layer-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .layer-item.active {
+            background-color: #e7f1ff;
+        }
+
+        .layer-item input {
+            margin-right: 8px;
+        }
+
+        .layer-item label {
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 8px;
+            background-color: var(--secondary-color);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 500;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .search-result {
+            padding: 8px;
+            border-bottom: 1px solid #dee2e6;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+        .search-result:hover {
+            background-color: #f8f9fa;
+        }
+
+        .language-option {
+            padding: 10px;
+            margin-bottom: 6px;
+            border: 1px solid #dee2e6;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+
+        .language-option:hover {
+            background-color: #e7f1ff;
+            border-color: var(--secondary-color);
+        }
+
+        .language-option.active {
+            background-color: #e7f1ff;
+            border-color: var(--secondary-color);
+            font-weight: 600;
+        }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1100;
+            width: 48px;
+            height: 48px;
+            background: white;
+            border: 2px solid var(--primary-color);
+            border-radius: 8px;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .mobile-menu-btn span {
+            width: 24px;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 2px;
+            transition: all 0.3s;
+        }
+
+        .mobile-menu-btn.active span:nth-child(1) {
+            transform: rotate(45deg) translateY(10px);
+        }
+
+        .mobile-menu-btn.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .mobile-menu-btn.active span:nth-child(3) {
+            transform: rotate(-45deg) translateY(-10px);
+        }
+
+        /* Responsive - Tablet */
+        @media (max-width: 1024px) {
+            .ribbon-tool {
+                width: 56px;
+                height: 56px;
+                min-width: 56px;
+                min-height: 56px;
+                max-width: 56px;
+                max-height: 56px;
+                padding: 4px;
+            }
+
+            .ribbon-tool-label {
+                font-size: 10px;
+            }
+
+            .ribbon-quick-action {
+                font-size: 12px;
+                padding: 3px 10px;
+            }
+
+            .side-panel {
+                max-width: 350px;
+            }
+        }
+
+        /* Responsive - Mobile */
+        @media (max-width: 768px) {
+            body {
+                -webkit-user-select: none;
+                -webkit-tap-highlight-color: transparent;
+                -webkit-touch-callout: none;
+                user-select: none;
+            }
+
+            * {
+                touch-action: manipulation;
+            }
+
+            input, select, textarea {
+                font-size: 16px !important; /* Prevent iOS zoom */
+            }
+
+            .mobile-menu-btn {
+                display: flex;
+            }
+
+            /* Edit Mode Switcher - Mobile (integrated in ribbon) */
+            .ribbon-mode-switcher-group {
+                border-left: none;
+                padding-left: 0;
+                width: 100%;
+                margin-left: 0;
+            }
+
+            .edit-mode-switcher {
+                gap: 4px;
+            }
+
+            .edit-mode-switcher .mode-btn {
+                width: 56px;
+                height: 56px;
+                min-width: 56px;
+                min-height: 56px;
+                max-width: 56px;
+                max-height: 56px;
+            }
+
+            .edit-mode-switcher .mode-btn .ribbon-tool-icon {
+                font-size: 20px;
+            }
+
+            .edit-mode-switcher .mode-btn .ribbon-tool-label {
+                font-size: 10px;
+            }
+
+            /* Map Edit Panel - Mobile */
+            .map-edit-panel {
+                width: calc(100% - 16px);
+                min-width: auto;
+                left: 8px;
+                right: 8px;
+                transform: none;
+                bottom: 70px;
+            }
+
+            .tool-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+
+            /* Grid Edit Panel - Mobile */
+            .grid-edit-header {
+                flex-direction: column;
+                gap: 8px;
+                align-items: stretch;
+            }
+
+            .grid-edit-search {
+                width: 100%;
+            }
+
+            .grid-edit-table-container {
+                overflow-x: auto;
+            }
+
+            .grid-edit-table {
+                min-width: 800px;
+            }
+
+            /* Chart Edit Panel - Mobile */
+            .chart-edit-toolbar {
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .chart-node {
+                min-width: 160px;
+            }
+
+            .ribbon-toolbar {
+                position: fixed;
+                top: 0;
+                left: -100%;
+                width: 80%;
+                max-width: 300px;
+                height: 100vh;
+                z-index: 1050;
+                transition: left 0.3s ease-in-out;
+                overflow-y: auto;
+                box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
+            }
+
+            .ribbon-toolbar.mobile-open {
+                left: 0;
+            }
+
+            .ribbon-tabs {
+                flex-direction: column;
+                overflow-x: visible;
+            }
+
+            .ribbon-tab {
+                border-radius: 0;
+                border-left: none;
+                border-right: none;
+            }
+
+            .ribbon-content {
+                position: relative;
+            }
+
+            .ribbon-group {
+                flex-direction: column;
+                min-width: 100%;
+                padding: 12px;
+                border: none;
+            }
+
+            .ribbon-group-tools {
+                flex-direction: row;
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+
+            .ribbon-tool {
+                flex: 1;
+                width: 60px;
+                height: 60px;
+                min-width: 60px;
+                min-height: 60px;
+                max-width: 60px;
+                max-height: 60px;
+                padding: 6px;
+            }
+
+            .ribbon-tool-icon {
+                font-size: 28px;
+                margin-bottom: 4px;
+            }
+
+            .ribbon-tool-label {
+                display: block;
+                font-size: 11px;
+            }
+
+            .side-panel {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                width: 100% !important;
+                max-width: 100% !important;
+                height: 100vh !important;
+                z-index: 600;
+                border: none !important;
+            }
+
+            .side-panel-header {
+                padding: 16px;
+                font-size: 16px;
+            }
+
+            .side-panel-close {
+                font-size: 28px;
+                padding: 0 8px;
+                min-width: 48px;
+                min-height: 48px;
+            }
+
+            .status-bar {
+                flex-wrap: wrap;
+                padding: 6px 8px;
+            }
+
+            .status-bar-center {
+                display: none;
+            }
+
+            .status-bar-left,
+            .status-bar-right {
+                font-size: 11px;
+            }
+
+            /* Touch-friendly buttons */
+            button, .ribbon-tool, .ribbon-tab {
+                min-height: 44px;
+                min-width: 44px;
+            }
+
+            .ribbon-quick-action {
+                min-height: 36px;
+                padding: 4px 12px;
+            }
+        }
+
+        /* Responsive - Small Mobile */
+        @media (max-width: 480px) {
+            .ribbon-app-title {
+                font-size: 14px;
+            }
+
+            .ribbon-quick-actions {
+                gap: 4px;
+            }
+
+            .ribbon-quick-action span {
+                display: none;
+            }
+
+            /* Edit Mode Switcher - Small Mobile */
+            .edit-mode-switcher .mode-btn {
+                width: 48px;
+                height: 48px;
+                min-width: 48px;
+                min-height: 48px;
+                max-width: 48px;
+                max-height: 48px;
+                padding: 4px;
+            }
+
+            .edit-mode-switcher .mode-btn .ribbon-tool-icon {
+                font-size: 18px;
+                margin-bottom: 2px;
+            }
+
+            .edit-mode-switcher .mode-btn .ribbon-tool-label {
+                font-size: 9px;
+            }
+
+            /* Tool buttons smaller on small screens */
+            .tool-btn {
+                min-height: 56px;
+            }
+
+            .ribbon-tool {
+                width: 52px;
+                height: 52px;
+                min-width: 52px;
+                min-height: 52px;
+                max-width: 52px;
+                max-height: 52px;
+            }
+
+            .status-bar {
+                font-size: 10px;
+            }
+        }
+
+        /* Touch devices - larger tap targets */
+        @media (hover: none) and (pointer: coarse) {
+            .ribbon-tool,
+            .ribbon-tab,
+            button {
+                width: 52px;
+                height: 52px;
+                min-height: 52px;
+                min-width: 52px;
+                max-width: 52px;
+                max-height: 52px;
+            }
+
+            .ribbon-tool-icon {
+                font-size: 26px;
+            }
+        }
+
+        /* Landscape mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .ribbon-toolbar {
+                max-width: 250px;
+            }
+
+            .ribbon-tool {
+                min-height: 50px;
+            }
+
+            .status-bar {
+                padding: 3px 8px;
+                min-height: 24px;
+            }
+        }
+
+        /* iOS Safe Area */
+        @supports (padding: env(safe-area-inset-left)) {
+            .ribbon-top-bar {
+                padding-left: max(12px, env(safe-area-inset-left));
+                padding-right: max(12px, env(safe-area-inset-right));
+            }
+
+            .status-bar {
+                padding-left: max(12px, env(safe-area-inset-left));
+                padding-right: max(12px, env(safe-area-inset-right));
+                padding-bottom: max(4px, env(safe-area-inset-bottom));
+            }
+
+            .mobile-menu-btn {
+                right: max(10px, env(safe-area-inset-right));
+                top: max(10px, env(safe-area-inset-top));
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div class="splash-screen" id="splash-screen">
+        <svg class="splash-logo" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z" 
+                  fill="white" stroke="white" stroke-width="0.5"/>
+        </svg>
+        
+        <h1 class="splash-title">dufour.app</h1>
+        <p class="splash-subtitle">Lightweight Geospatial Web Application</p>
+        
+        <div class="splash-mockup-badge">
+            ⚠️ UI/UX MOCKUP ⚠️
+        </div>
+        
+        <p class="splash-description">
+            This is an interactive HTML/JavaScript prototype demonstrating the user interface and workflow.
+            <br>
+            <strong>Non-functional tools</strong> - For testing visual design and navigation patterns only.
+        </p>
+        
+        <div class="splash-loader"></div>
+        
+        <div class="splash-version">v0.1.0-mockup | Powered by OpenLayers</div>
+    </div>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobile-menu-btn" aria-label="Toggle Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <div class="app-container">
+        <!-- Ribbon Toolbar -->
+        <div class="ribbon-toolbar" id="ribbon-toolbar">
+            <!-- Top Bar -->
+            <div class="ribbon-top-bar">
+                <div class="ribbon-app-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 2C8.13 2 5 5.13 5 9C5 14.25 12 22 12 22C12 22 19 14.25 19 9C19 5.13 15.87 2 12 2ZM12 11.5C10.62 11.5 9.5 10.38 9.5 9C9.5 7.62 10.62 6.5 12 6.5C13.38 6.5 14.5 7.62 14.5 9C14.5 10.38 13.38 11.5 12 11.5Z"/>
+                    </svg>
+                    <span>dufour.app</span>
+                </div>
+                <div class="ribbon-quick-actions">
+                    <button class="ribbon-quick-action" onclick="openPanel('right', 'settings')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 4px;">
+                            <path d="M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94L14.4 2.81c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+                        </svg>
+                        Settings
+                    </button>
+                    <button class="ribbon-quick-action" onclick="alert('Help documentation coming soon!')">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" style="vertical-align: middle; margin-right: 4px;">
+                            <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 17h-2v-2h2v2zm2.07-7.75l-.9.92C13.45 12.9 13 13.5 13 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41 0-1.1-.9-2-2-2s-2 .9-2 2H8c0-2.21 1.79-4 4-4s4 1.79 4 4c0 .88-.36 1.68-.93 2.25z"/>
+                        </svg>
+                        Help
+                    </button>
+                </div>
+            </div>
+
+            <!-- Ribbon Tabs -->
+            <div class="ribbon-tabs">
+                <div class="ribbon-tab active" onclick="switchTab('map')">Map</div>
+                <div class="ribbon-tab" onclick="switchTab('draw')">Draw</div>
+                <div class="ribbon-tab" onclick="switchTab('measure')">Measure</div>
+                <div class="ribbon-tab" onclick="switchTab('analysis')">Analysis</div>
+                <div class="ribbon-tab" onclick="switchTab('data')">Data</div>
+            </div>
+
+            <!-- Ribbon Content -->
+            <div class="ribbon-content" id="ribbon-content">
+                <!-- Content will be dynamically loaded by JavaScript -->
+                <!-- Edit Mode Switcher will be appended here -->
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="app-main">
+            <!-- Left Panel -->
+            <div class="side-panel left hidden" id="left-panel">
+                <div class="side-panel-header">
+                    <div class="side-panel-title" id="left-panel-title">Panel</div>
+                    <button class="side-panel-close" onclick="closePanel('left')">×</button>
+                </div>
+                <div class="side-panel-content" id="left-panel-content"></div>
+            </div>
+
+            <!-- Map Container -->
+            <div class="map-container" id="map-view">
+                <div id="map"></div>
+
+                <!-- Map Edit Panel -->
+                <div class="map-edit-panel hidden" id="map-edit-panel">
+                    <div class="map-edit-panel-header">
+                        <div class="map-edit-panel-title">Strumenti di Disegno</div>
+                        <button class="map-edit-panel-close" onclick="closeMapEditPanel()">×</button>
+                    </div>
+                    <div class="map-edit-panel-content">
+                        <div class="tool-section">
+                            <div class="tool-section-title">Disegna</div>
+                            <div class="tool-grid">
+                                <button class="tool-btn" onclick="selectDrawTool('point')">
+                                    <div class="tool-btn-icon">📍</div>
+                                    <div class="tool-btn-label">Punto</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('line')">
+                                    <div class="tool-btn-icon">📏</div>
+                                    <div class="tool-btn-label">Linea</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('polygon')">
+                                    <div class="tool-btn-icon">⬟</div>
+                                    <div class="tool-btn-label">Poligono</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('circle')">
+                                    <div class="tool-btn-icon">⭕</div>
+                                    <div class="tool-btn-label">Cerchio</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('rectangle')">
+                                    <div class="tool-btn-icon">▭</div>
+                                    <div class="tool-btn-label">Rettangolo</div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tool-section">
+                            <div class="tool-section-title">Modifica</div>
+                            <div class="tool-grid">
+                                <button class="tool-btn" onclick="selectDrawTool('select')">
+                                    <div class="tool-btn-icon">👆</div>
+                                    <div class="tool-btn-label">Seleziona</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('modify')">
+                                    <div class="tool-btn-icon">✏️</div>
+                                    <div class="tool-btn-label">Modifica</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('move')">
+                                    <div class="tool-btn-icon">↔️</div>
+                                    <div class="tool-btn-label">Sposta</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('rotate')">
+                                    <div class="tool-btn-icon">↻</div>
+                                    <div class="tool-btn-label">Ruota</div>
+                                </button>
+                                <button class="tool-btn" onclick="selectDrawTool('delete')">
+                                    <div class="tool-btn-icon">🗑️</div>
+                                    <div class="tool-btn-label">Elimina</div>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="tool-section">
+                            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px;">
+                                <input type="checkbox" id="snap-enabled" onchange="toggleSnap(this.checked)">
+                                Aggancia alla griglia
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid Edit Panel -->
+            <div class="grid-edit-panel hidden" id="grid-view">
+                <div class="grid-edit-header">
+                    <input type="text" class="grid-edit-search" placeholder="Cerca unità..." id="grid-search" oninput="filterGridUnits(this.value)">
+                    <div class="grid-edit-actions">
+                        <button class="btn" onclick="addGridUnit()" style="width: auto; padding: 6px 12px;">➕ Aggiungi Unità</button>
+                        <button class="btn" onclick="deleteSelectedUnits()" style="width: auto; padding: 6px 12px; background: #e74c3c;">🗑️ Elimina Selezionati</button>
+                    </div>
+                </div>
+                <div class="grid-edit-table-container">
+                    <table class="grid-edit-table">
+                        <thead>
+                            <tr>
+                                <th><input type="checkbox" id="select-all" onchange="toggleSelectAll(this.checked)"></th>
+                                <th>Simbolo</th>
+                                <th>Nome</th>
+                                <th>Echelon</th>
+                                <th>Affiliazione</th>
+                                <th>Forza</th>
+                                <th>Posizione</th>
+                                <th>Superiore</th>
+                            </tr>
+                        </thead>
+                        <tbody id="grid-table-body">
+                            <!-- Rows will be dynamically loaded -->
+                            <tr>
+                                <td><input type="checkbox" class="row-select"></td>
+                                <td>🪖</td>
+                                <td>1st Infantry Division</td>
+                                <td>Division</td>
+                                <td>Friend</td>
+                                <td>15000</td>
+                                <td>46.2°N, 6.1°E</td>
+                                <td>Army Corps</td>
+                            </tr>
+                            <tr>
+                                <td><input type="checkbox" class="row-select"></td>
+                                <td>🪖</td>
+                                <td>2nd Brigade</td>
+                                <td>Brigade</td>
+                                <td>Friend</td>
+                                <td>4000</td>
+                                <td>46.3°N, 6.2°E</td>
+                                <td>1st Infantry Division</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Chart Edit Panel -->
+            <div class="chart-edit-panel hidden" id="chart-view">
+                <div class="chart-edit-toolbar">
+                    <div style="display: flex; gap: 8px; align-items: center;">
+                        <button class="btn" onclick="zoomChart('in')" style="width: 36px; padding: 6px;">+</button>
+                        <span id="zoom-level" style="font-size: 13px; font-weight: 600;">100%</span>
+                        <button class="btn" onclick="zoomChart('out')" style="width: 36px; padding: 6px;">-</button>
+                    </div>
+                    <div style="display: flex; gap: 12px; font-size: 13px;">
+                        <label style="display: flex; align-items: center; gap: 4px;">
+                            <input type="checkbox" checked onchange="toggleChartSetting('strength', this.checked)">
+                            Mostra forza
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px;">
+                            <input type="checkbox" onchange="toggleChartSetting('equipment', this.checked)">
+                            Mostra equipaggiamento
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px;">
+                            <input type="checkbox" onchange="toggleChartSetting('compact', this.checked)">
+                            Modalità compatta
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 4px;">
+                            <input type="checkbox" checked onchange="toggleChartSetting('colors', this.checked)">
+                            Colori affiliazione
+                        </label>
+                    </div>
+                    <div style="display: flex; gap: 8px;">
+                        <button class="btn" onclick="exportChart('svg')" style="width: auto; padding: 6px 12px;">📄 SVG</button>
+                        <button class="btn" onclick="exportChart('png')" style="width: auto; padding: 6px 12px;">🖼️ PNG</button>
+                    </div>
+                </div>
+                <div class="chart-edit-canvas" id="chart-canvas">
+                    <!-- Example chart nodes -->
+                    <div class="chart-node selected" style="border-color: #3498db;">
+                        <div class="chart-node-header">🪖 Army Corps</div>
+                        <div class="chart-node-info">Forza: 50000 | Echelon: Corps</div>
+                    </div>
+                    <div style="margin-left: 40px;">
+                        <div class="chart-node" style="border-color: #3498db;">
+                            <div class="chart-node-header">🪖 1st Infantry Division</div>
+                            <div class="chart-node-info">Forza: 15000 | Echelon: Division</div>
+                        </div>
+                        <div style="margin-left: 40px;">
+                            <div class="chart-node" style="border-color: #3498db;">
+                                <div class="chart-node-header">🪖 2nd Brigade</div>
+                                <div class="chart-node-info">Forza: 4000 | Echelon: Brigade</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel -->
+            <div class="side-panel right hidden" id="right-panel">
+                <div class="side-panel-header">
+                    <div class="side-panel-title" id="right-panel-title">Panel</div>
+                    <button class="side-panel-close" onclick="closePanel('right')">×</button>
+                </div>
+                <div class="side-panel-content" id="right-panel-content"></div>
+            </div>
+        </div>
+
+        <!-- Status Bar -->
+        <div class="status-bar">
+            <div class="status-bar-left">
+                <div class="status-item">
+                    <span class="status-item-label">Coordinates:</span>
+                    <span class="status-item-value" id="coordinates">---</span>
+                </div>
+                <div class="status-item">
+                    <span class="status-item-label">Projection:</span>
+                    <span class="status-item-value">WGS84</span>
+                </div>
+            </div>
+            <div class="status-bar-center">
+                <div class="status-item">
+                    <span class="status-item-label">Scale:</span>
+                    <span class="status-item-value" id="scale">---</span>
+                </div>
+            </div>
+            <div class="status-bar-right">
+                <div class="status-item">
+                    <span class="status-item-label">Zoom:</span>
+                    <span class="status-item-value" id="zoom">---</span>
+                </div>
+                <div class="status-item">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="#27ae60" style="vertical-align: middle; margin-right: 4px;">
+                        <circle cx="12" cy="12" r="10"/>
+                    </svg>
+                    <span class="status-item-value">Online</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/ol@9.1.0/dist/ol.js"></script>
+    <script src="mockup-app.js"></script>
+</body>
+</html>
