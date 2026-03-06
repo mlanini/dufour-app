@@ -11,6 +11,8 @@ import SidePanel from './SidePanel';
 import MapEditPanel from './MapEditPanel';
 import GridEditPanel from './GridEditPanel';
 import ChartEditPanel from './ChartEditPanel';
+import MeasurePlugin, { MeasureMode } from '../plugins/Measure';
+import RedliningPlugin, { DrawMode } from '../plugins/Redlining';
 import '../styles/ribbon.css';
 
 const DufourApp = () => {
@@ -24,6 +26,12 @@ const DufourApp = () => {
   // Edit mode state: 'map', 'grid', 'chart'
   const [editMode, setEditMode] = useState('map');
   const [mapEditPanelOpen, setMapEditPanelOpen] = useState(false);
+  
+  // Plugin states
+  const [measureActive, setMeasureActive] = useState(false);
+  const [measureMode, setMeasureMode] = useState(null);
+  const [redliningActive, setRedliningActive] = useState(false);
+  const [redliningMode, setRedliningMode] = useState(null);
 
   const dispatch = useDispatch();
   const locale = useSelector(state => state.locale?.current || 'en-US');
@@ -51,11 +59,33 @@ const DufourApp = () => {
         setActiveTool('identify');
         break;
       
+      // Measurement tools
       case 'measure-distance':
-      case 'measure-area':
-      case 'measure-angle':
+        setMeasureMode(MeasureMode.DISTANCE);
+        setMeasureActive(true);
+        setRedliningActive(false);
         setActiveTool(toolId);
-        setRightPanelContent('measurement');
+        break;
+      
+      case 'measure-area':
+        setMeasureMode(MeasureMode.AREA);
+        setMeasureActive(true);
+        setRedliningActive(false);
+        setActiveTool(toolId);
+        break;
+      
+      case 'measure-circle':
+        setMeasureMode(MeasureMode.CIRCLE);
+        setMeasureActive(true);
+        setRedliningActive(false);
+        setActiveTool(toolId);
+        break;
+      
+      case 'measure-angle':
+        setMeasureMode(MeasureMode.ANGLE);
+        setMeasureActive(true);
+        setRedliningActive(false);
+        setActiveTool(toolId);
         break;
       
       // Map editing tools
@@ -79,15 +109,54 @@ const DufourApp = () => {
         setRightPanelOpen(true);
         break;
       
+      // Redlining/Drawing tools
       case 'draw-point':
-      case 'draw-line':
-      case 'draw-polygon':
-      case 'draw-circle':
-      case 'draw-rectangle':
-      case 'draw-text':
+        setRedliningMode(DrawMode.POINT);
+        setRedliningActive(true);
+        setMeasureActive(false);
         setActiveTool(toolId);
-        setRightPanelContent('redlining');
-        setRightPanelOpen(true);
+        break;
+      
+      case 'draw-line':
+        setRedliningMode(DrawMode.LINE);
+        setRedliningActive(true);
+        setMeasureActive(false);
+        setActiveTool(toolId);
+        break;
+      
+      case 'draw-polygon':
+        setRedliningMode(DrawMode.POLYGON);
+        setRedliningActive(true);
+        setMeasureActive(false);
+        setActiveTool(toolId);
+        break;
+      
+      case 'draw-circle':
+        setRedliningMode(DrawMode.CIRCLE);
+        setRedliningActive(true);
+        setMeasureActive(false);
+        setActiveTool(toolId);
+        break;
+      
+      case 'draw-rectangle':
+        setRedliningMode(DrawMode.RECTANGLE);
+        setRedliningActive(true);
+        setMeasureActive(false);
+        setActiveTool(toolId);
+        break;
+      
+      case 'draw-text':
+        setRedliningMode(DrawMode.TEXT);
+        setRedliningActive(true);
+        setMeasureActive(false);
+        setActiveTool(toolId);
+        break;
+      
+      case 'draw-marker':
+        setRedliningMode(DrawMode.MARKER);
+        setRedliningActive(true);
+        setMeasureActive(false);
+        setActiveTool(toolId);
         break;
       
       case 'slope':
