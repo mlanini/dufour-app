@@ -26,8 +26,8 @@ RUN npm run build
 # Production stage with Nginx
 FROM nginx:alpine
 
-# Copy custom nginx config
-COPY nginx/nginx.conf /etc/nginx/nginx.conf
+# Copy custom nginx config (for Render.com - no upstream proxy)
+COPY nginx/nginx-render.conf /etc/nginx/nginx.conf
 
 # Copy built frontend from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
