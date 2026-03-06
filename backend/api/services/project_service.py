@@ -21,7 +21,7 @@ class ProjectService:
     
     def __init__(self):
         # Project storage directory
-        self.projects_dir = Path(os.getenv('PROJECTS_DIR', '/projects'))
+        self.projects_dir = Path(os.getenv('PROJECTS_DIR', '/data/projects'))
         self.projects_dir.mkdir(parents=True, exist_ok=True)
         
         # QGIS Server URL for GetCapabilities

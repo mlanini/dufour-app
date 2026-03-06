@@ -23,7 +23,7 @@ class QWCService:
         self.themes_dir.mkdir(parents=True, exist_ok=True)
         
         # Projects directory
-        self.projects_dir = Path(os.getenv('PROJECTS_DIR', '/projects'))
+        self.projects_dir = Path(os.getenv('PROJECTS_DIR', '/data/projects'))
         
         # QGIS Server URL
         self.qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:8080')

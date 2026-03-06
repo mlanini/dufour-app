@@ -12,7 +12,6 @@ from services.project_service import ProjectService
 from services.data_service import DataService
 from services.qwc_service import QWCService
 from models.schemas import ProjectResponse, TableSchema, UploadResponse
-from mock_projects import get_mock_projects, get_mock_project, create_mock_qgs_files
 
 # Initialize FastAPI app
 app = FastAPI(
@@ -39,6 +38,28 @@ project_service = ProjectService()
 data_service = DataService()
 qwc_service = QWCService()
 
+# Global exception handler to ensure CORS headers on errors
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    from fastapi.responses import JSONResponse
+    import traceback
+    
+    # Log the full error for debugging
+    print(f"Global error handler caught: {type(exc).__name__}: {str(exc)}")
+    print(traceback.format_exc())
+    
+    # Return JSON response with CORS headers
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal server error: {str(exc)}"},
+        headers={
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
 
 # ==================== PROJECT ENDPOINTS ====================
 
@@ -60,7 +81,7 @@ async def api_status():
     import os
     from pathlib import Path
     
-    projects_dir = Path(os.getenv('PROJECTS_DIR', '/projects'))
+    projects_dir = Path(os.getenv('PROJECTS_DIR', '/data/projects'))
     qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:8080')
     
     # Check projects directory
@@ -101,48 +122,29 @@ async def list_projects():
     """
     List all available QGIS projects
     Returns: List of projects with metadata
-    
-    Falls back to mock projects if no real projects are available
     """
     try:
         projects = await project_service.list_projects()
-        
-        # If no projects found, use mock projects
-        if not projects:
-            mock_projects = get_mock_projects()
-            return [ProjectResponse(**p) for p in mock_projects]
-        
         return projects
     except Exception as e:
-        # On any error, return mock projects
-        mock_projects = get_mock_projects()
-        return [ProjectResponse(**p) for p in mock_projects]
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 @app.get("/api/projects/{project_name}")
 async def get_project(project_name: str):
     """
     Get project details and configuration
-    Falls back to mock project if not found
     """
     try:
         project = await project_service.get_project(project_name)
         
-        # Fallback to mock project
         if not project:
-            mock_project = get_mock_project(project_name)
-            if mock_project:
-                return mock_project
             raise HTTPException(status_code=404, detail="Project not found")
         
         return project
     except HTTPException:
         raise
     except Exception as e:
-        # Try mock projects on error
-        mock_project = get_mock_project(project_name)
-        if mock_project:
-            return mock_project
         raise HTTPException(status_code=500, detail=str(e))
 
 
@@ -291,23 +293,6 @@ async def get_theme_config(theme_name: str):
 
 
 # ==================== UTILITY ENDPOINTS ====================
-
-@app.post("/api/init-mock-projects")
-async def init_mock_projects():
-    """
-    Initialize mock QGIS projects for testing
-    Creates .qgs files in projects directory
-    """
-    try:
-        count = create_mock_qgs_files()
-        return {
-            "success": True,
-            "message": f"Created {count} mock projects",
-            "projects": [p["name"] for p in get_mock_projects()]
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Failed to create mock projects: {str(e)}")
-
 
 @app.get("/api/status")
 async def get_status():
