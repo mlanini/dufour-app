@@ -228,16 +228,18 @@ export function createSwissLayer(layerConfig, options = {}) {
 
   const tileGrid = createSwissTileGrid();
   
-  // Create custom tile URL function to properly replace placeholders
+  // Create custom tile URL function following geo.admin.ch REST API format
+  // Format: https://wmts.geo.admin.ch/1.0.0/{Layer}/default/{Time}/{TileMatrixSet}/{TileMatrix}/{TileCol}/{TileRow}.{Format}
+  // Note: For EPSG:3857, use standard col/row order (not row/col like EPSG:21781)
   const tileUrlFunction = (tileCoord) => {
     if (!tileCoord) return undefined;
     
-    const z = tileCoord[0];
-    const x = tileCoord[1];
-    const y = tileCoord[2];
+    const z = tileCoord[0];      // TileMatrix (zoom level)
+    const x = tileCoord[1];      // TileCol
+    const y = tileCoord[2];      // TileRow
     
-    // SwissTopo WMTS URL format
-    return `https://wmts.geo.admin.ch/1.0.0/${layerConfig.id}/default/current/3857/${z}/${y}/${x}.${layerConfig.format}`;
+    // SwissTopo WMTS REST API: TileMatrix/TileCol/TileRow order for EPSG:3857
+    return `https://wmts.geo.admin.ch/1.0.0/${layerConfig.id}/default/current/3857/${z}/${x}/${y}.${layerConfig.format}`;
   };
 
   const source = new WMTS({
