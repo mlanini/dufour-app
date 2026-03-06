@@ -22,7 +22,7 @@ services:
       - key: POSTGIS_USER
         value: intelligeo_dufour_admin
       - key: POSTGIS_PASSWORD
-        value: Dufour.00r
+        sync: false  # Configure manually in Render dashboard (Secret)
       - key: QGIS_SERVER_URL
         value: https://dufour-qgis.onrender.com
       - key: PROJECTS_DIR
