@@ -31,11 +31,13 @@ const icons = {
 };
 
 // State
-let currentTab = 'map';
+let currentTab = 'maps';
 let currentLocale = 'en_US';
 let activeTool = null;
 let map = null;
 let currentProject = 'tactical_ops';
+let measureActive = false;
+let redliningActive = false;
 let projects = [
     { name: 'tactical_ops', title: 'Tactical Operations' },
     { name: 'training_area', title: 'Training Area Map' },
@@ -45,19 +47,23 @@ let projects = [
 // Translations
 const translations = {
     en_US: {
-        map: 'Map',
-        draw: 'Draw',
-        measure: 'Measure',
+        maps: 'Maps',
+        view: 'View',
         analysis: 'Analysis',
-        data: 'Data',
+        draw: 'Draw',
+        gps: 'GPS',
+        settings: 'Settings',
         zoomIn: 'Zoom In',
         zoomOut: 'Zoom Out',
         home: 'Home',
         locate: 'My Location',
         layers: 'Layers',
+        layerCatalog: 'Layer Catalog',
         basemap: 'Base Map',
         search: 'Search',
+        identify: 'Identify',
         info: 'Info',
+        import: 'Import Layer',
         point: 'Point',
         line: 'Line',
         polygon: 'Polygon',
@@ -70,25 +76,32 @@ const translations = {
         angle: 'Angle',
         terrain: 'Terrain',
         viewshed: 'Viewshed',
-        import: 'Import',
+        heightProfile: 'Height Profile',
+        slope: 'Slope Analysis',
         export: 'Export',
         print: 'Print',
-        settings: 'Settings'
+        mapCompare: 'Map Compare',
+        view3d: '3D View',
+        overviewMap: 'Overview Map'
     },
     de_CH: {
-        map: 'Karte',
-        draw: 'Zeichnen',
-        measure: 'Messen',
+        maps: 'Karten',
+        view: 'Ansicht',
         analysis: 'Analyse',
-        data: 'Daten',
+        draw: 'Zeichnen',
+        gps: 'GPS',
+        settings: 'Einstellungen',
         zoomIn: 'Vergrössern',
         zoomOut: 'Verkleinern',
         home: 'Start',
         locate: 'Standort',
         layers: 'Ebenen',
+        layerCatalog: 'Ebenenkatalog',
         basemap: 'Basiskarte',
         search: 'Suchen',
+        identify: 'Identifizieren',
         info: 'Info',
+        import: 'Ebene importieren',
         point: 'Punkt',
         line: 'Linie',
         polygon: 'Polygon',
@@ -101,25 +114,32 @@ const translations = {
         angle: 'Winkel',
         terrain: 'Gelände',
         viewshed: 'Sichtfeld',
-        import: 'Importieren',
+        heightProfile: 'Höhenprofil',
+        slope: 'Hangneigung',
         export: 'Exportieren',
         print: 'Drucken',
-        settings: 'Einstellungen'
+        mapCompare: 'Kartenvergleich',
+        view3d: '3D Ansicht',
+        overviewMap: 'Übersichtskarte'
     },
     fr_FR: {
-        map: 'Carte',
-        draw: 'Dessiner',
-        measure: 'Mesurer',
+        maps: 'Cartes',
+        view: 'Vue',
         analysis: 'Analyse',
-        data: 'Données',
+        draw: 'Dessiner',
+        gps: 'GPS',
+        settings: 'Paramètres',
         zoomIn: 'Agrandir',
         zoomOut: 'Réduire',
         home: 'Accueil',
         locate: 'Position',
         layers: 'Couches',
+        layerCatalog: 'Catalogue de couches',
         basemap: 'Fond de carte',
         search: 'Rechercher',
+        identify: 'Identifier',
         info: 'Info',
+        import: 'Importer une couche',
         point: 'Point',
         line: 'Ligne',
         polygon: 'Polygone',
@@ -132,25 +152,32 @@ const translations = {
         angle: 'Angle',
         terrain: 'Terrain',
         viewshed: 'Champ de vision',
-        import: 'Importer',
+        heightProfile: 'Profil altimétrique',
+        slope: 'Analyse de pente',
         export: 'Exporter',
         print: 'Imprimer',
-        settings: 'Paramètres'
+        mapCompare: 'Comparer cartes',
+        view3d: 'Vue 3D',
+        overviewMap: 'Vue d\'ensemble'
     },
     it_IT: {
-        map: 'Mappa',
-        draw: 'Disegna',
-        measure: 'Misura',
+        maps: 'Mappe',
+        view: 'Vista',
         analysis: 'Analisi',
-        data: 'Dati',
+        draw: 'Disegna',
+        gps: 'GPS',
+        settings: 'Impostazioni',
         zoomIn: 'Ingrandisci',
         zoomOut: 'Riduci',
         home: 'Home',
         locate: 'Posizione',
         layers: 'Livelli',
+        layerCatalog: 'Catalogo livelli',
         basemap: 'Mappa base',
         search: 'Cerca',
+        identify: 'Identifica',
         info: 'Info',
+        import: 'Importa livello',
         point: 'Punto',
         line: 'Linea',
         polygon: 'Poligono',
@@ -163,10 +190,13 @@ const translations = {
         angle: 'Angolo',
         terrain: 'Terreno',
         viewshed: 'Campo visivo',
-        import: 'Importa',
+        heightProfile: 'Profilo altimetrico',
+        slope: 'Analisi pendenza',
         export: 'Esporta',
         print: 'Stampa',
-        settings: 'Impostazioni'
+        mapCompare: 'Confronta mappe',
+        view3d: 'Vista 3D',
+        overviewMap: 'Mappa panoramica'
     }
 };
 
@@ -175,44 +205,75 @@ function t(key) {
     return translations[currentLocale][key] || key;
 }
 
-// Ribbon Tabs Content
+// Ribbon Tabs Content - KADAS Structure
 const ribbonContent = {
-    map: [
+    maps: [
         {
-            label: 'Navigation',
+            label: 'Layers',
             tools: [
-                { id: 'zoom-in', icon: 'zoomIn', label: 'zoomIn', size: 'normal' },
-                { id: 'zoom-out', icon: 'zoomOut', label: 'zoomOut', size: 'normal' },
-                { id: 'home', icon: 'home', label: 'home', size: 'large' }
-            ]
-        },
-        {
-            label: 'Tools',
-            tools: [
-                { id: 'locate', icon: 'locate', label: 'locate', size: 'normal' },
-                { id: 'layers', icon: 'layers', label: 'layers', size: 'large', panel: 'left' },
-                { id: 'basemap', icon: 'map', label: 'basemap', size: 'normal', panel: 'left' }
+                { id: 'layer-tree', icon: 'layers', label: 'layers', size: 'large', panel: 'left' },
+                { id: 'layer-catalog', icon: 'map', label: 'layerCatalog', size: 'large', panel: 'left' },
+                { id: 'import-layer', icon: 'upload', label: 'import', size: 'normal', panel: 'left' },
+                { id: 'background-switcher', icon: 'map', label: 'basemap', size: 'normal', panel: 'left' }
             ]
         },
         {
             label: 'Information',
             tools: [
                 { id: 'search', icon: 'search', label: 'search', size: 'large', panel: 'left' },
-                { id: 'info', icon: 'info', label: 'info', size: 'normal' }
+                { id: 'identify', icon: 'info', label: 'identify', size: 'normal' }
+            ]
+        }
+    ],
+    view: [
+        {
+            label: 'Navigation',
+            tools: [
+                { id: 'zoom-in', icon: 'zoomIn', label: 'zoomIn', size: 'normal' },
+                { id: 'zoom-out', icon: 'zoomOut', label: 'zoomOut', size: 'normal' },
+                { id: 'home', icon: 'home', label: 'home', size: 'large' },
+                { id: 'previous-extent', icon: 'home', label: 'Previous', size: 'small' },
+                { id: 'next-extent', icon: 'home', label: 'Next', size: 'small' }
+            ]
+        },
+        {
+            label: 'View Controls',
+            tools: [
+                { id: 'overview-map', icon: 'map', label: 'overviewMap', size: 'normal' },
+                { id: 'map-compare', icon: 'layers', label: 'mapCompare', size: 'large', panel: 'right' },
+                { id: 'view-3d', icon: 'mountain', label: 'view3d', size: 'large' }
+            ]
+        },
+        {
+            label: 'Output',
+            tools: [
+                { id: 'print', icon: 'printer', label: 'print', size: 'large', panel: 'right' },
+                { id: 'export-map', icon: 'download', label: 'export', size: 'normal', panel: 'right' }
+            ]
+        }
+    ],
+    analysis: [
+        {
+            label: 'Measurements',
+            tools: [
+                { id: 'measure-distance', icon: 'ruler', label: 'distance', size: 'large', panel: 'right' },
+                { id: 'measure-area', icon: 'area', label: 'area', size: 'large', panel: 'right' },
+                { id: 'measure-circle', icon: 'circle', label: 'circle', size: 'normal', panel: 'right' },
+                { id: 'measure-angle', icon: 'angle', label: 'angle', size: 'normal', panel: 'right' }
+            ]
+        },
+        {
+            label: 'Terrain Analysis',
+            tools: [
+                { id: 'height-profile', icon: 'mountain', label: 'heightProfile', size: 'large', panel: 'right' },
+                { id: 'slope', icon: 'mountain', label: 'slope', size: 'normal', panel: 'right' },
+                { id: 'viewshed', icon: 'eye', label: 'viewshed', size: 'large', panel: 'right' }
             ]
         }
     ],
     draw: [
         {
-            label: 'Editing',
-            tools: [
-                { id: 'map-edit', icon: 'polygon', label: 'Map Edit', size: 'large', action: 'openMapEditPanel' },
-                { id: 'grid-edit', icon: 'area', label: 'Grid Edit', size: 'large', action: 'switchEditMode:grid' },
-                { id: 'chart-edit', icon: 'info', label: 'Chart Edit', size: 'large', action: 'switchEditMode:chart' }
-            ]
-        },
-        {
-            label: 'Shapes',
+            label: 'Drawing Tools',
             tools: [
                 { id: 'draw-point', icon: 'point', label: 'point', size: 'normal', panel: 'right' },
                 { id: 'draw-line', icon: 'line', label: 'line', size: 'normal', panel: 'right' },
@@ -225,41 +286,50 @@ const ribbonContent = {
             label: 'Annotations',
             tools: [
                 { id: 'draw-text', icon: 'text', label: 'text', size: 'normal', panel: 'right' },
-                { id: 'draw-marker', icon: 'marker', label: 'marker', size: 'large', panel: 'right' }
-            ]
-        }
-    ],
-    measure: [
-        {
-            label: 'Measurements',
-            tools: [
-                { id: 'measure-distance', icon: 'ruler', label: 'distance', size: 'large', panel: 'right' },
-                { id: 'measure-area', icon: 'area', label: 'area', size: 'large', panel: 'right' },
-                { id: 'measure-angle', icon: 'angle', label: 'angle', size: 'normal', panel: 'right' }
-            ]
-        }
-    ],
-    analysis: [
-        {
-            label: 'Terrain',
-            tools: [
-                { id: 'terrain-slope', icon: 'mountain', label: 'terrain', size: 'large', panel: 'right' },
-                { id: 'terrain-viewshed', icon: 'eye', label: 'viewshed', size: 'large', panel: 'right' }
-            ]
-        }
-    ],
-    data: [
-        {
-            label: 'File Operations',
-            tools: [
-                { id: 'import', icon: 'upload', label: 'import', size: 'large', panel: 'right' },
-                { id: 'export', icon: 'download', label: 'export', size: 'large', panel: 'right' }
+                { id: 'draw-marker', icon: 'marker', label: 'marker', size: 'large', panel: 'right' },
+                { id: 'draw-symbol', icon: 'marker', label: 'Military Symbol', size: 'large', panel: 'right' }
             ]
         },
         {
-            label: 'Output',
+            label: 'Edit',
             tools: [
-                { id: 'print', icon: 'printer', label: 'print', size: 'large', panel: 'right' }
+                { id: 'edit-redlining', icon: 'polygon', label: 'Edit Features', size: 'normal' },
+                { id: 'delete-items', icon: 'text', label: 'Delete', size: 'normal' }
+            ]
+        }
+    ],
+    gps: [
+        {
+            label: 'GPS Navigation',
+            tools: [
+                { id: 'locate-me', icon: 'locate', label: 'locate', size: 'large' },
+                { id: 'gps-tracking', icon: 'locate', label: 'GPS Tracking', size: 'large' }
+            ]
+        },
+        {
+            label: 'GPX Data',
+            tools: [
+                { id: 'import-gpx', icon: 'upload', label: 'Import GPX', size: 'normal', panel: 'right' },
+                { id: 'export-gpx', icon: 'download', label: 'Export GPX', size: 'normal', panel: 'right' },
+                { id: 'draw-waypoint', icon: 'marker', label: 'Waypoint', size: 'normal', panel: 'right' },
+                { id: 'draw-route', icon: 'line', label: 'Route', size: 'normal', panel: 'right' }
+            ]
+        }
+    ],
+    settings: [
+        {
+            label: 'Preferences',
+            tools: [
+                { id: 'language', icon: 'settings', label: 'Language', size: 'large', panel: 'right' },
+                { id: 'grid-settings', icon: 'area', label: 'Grid Settings', size: 'normal', panel: 'right' },
+                { id: 'projection-settings', icon: 'map', label: 'Projection', size: 'normal', panel: 'right' }
+            ]
+        },
+        {
+            label: 'Help',
+            tools: [
+                { id: 'help', icon: 'help', label: 'Help', size: 'large' },
+                { id: 'about', icon: 'info', label: 'About', size: 'normal' }
             ]
         }
     ]
