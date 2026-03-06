@@ -61,7 +61,7 @@ async def api_status():
     from pathlib import Path
     
     projects_dir = Path(os.getenv('PROJECTS_DIR', '/projects'))
-    qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:80')
+    qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:8080')
     
     # Check projects directory
     projects_exist = projects_dir.exists()

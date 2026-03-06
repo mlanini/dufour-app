@@ -25,7 +25,7 @@ class ProjectService:
         self.projects_dir.mkdir(parents=True, exist_ok=True)
         
         # QGIS Server URL for GetCapabilities
-        self.qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:80')
+        self.qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:8080')
     
     
     async def list_projects(self) -> List[ProjectResponse]:

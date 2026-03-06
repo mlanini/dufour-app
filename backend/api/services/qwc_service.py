@@ -26,7 +26,7 @@ class QWCService:
         self.projects_dir = Path(os.getenv('PROJECTS_DIR', '/projects'))
         
         # QGIS Server URL
-        self.qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:80')
+        self.qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://qgis-server:8080')
     
     
     async def generate_theme_config(self, project_name: str) -> Dict[str, Any]:
