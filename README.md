@@ -103,6 +103,7 @@ docker-compose -f docker-compose.prod.yml up -d
 - **[DEPLOY-QUICK-START.md](DEPLOY-QUICK-START.md)** - Deploy su Render.com (10 min)
 - **[RENDER-DEPLOYMENT.md](RENDER-DEPLOYMENT.md)** - Guida completa deployment
 - **[PHASE3-TESTING.md](PHASE3-TESTING.md)** - Test sistema completo
+- **🔐 [SECRETS-MANAGEMENT.md](SECRETS-MANAGEMENT.md)** - Gestione sicura secrets e password
 
 ### Architecture & Development
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - Architettura sistema

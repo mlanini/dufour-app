@@ -2,6 +2,8 @@
 
 Guida rapida per deployment Dufour-app su Render.com.
 
+> **🔐 IMPORTANTE**: Leggi [SECRETS-MANAGEMENT.md](SECRETS-MANAGEMENT.md) per gestire correttamente password e API keys
+
 ## 🚀 Setup Rapido (10 minuti)
 
 ### 1. Push su GitHub
