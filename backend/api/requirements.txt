@@ -10,10 +10,7 @@ httpx==0.26.0
 psycopg2-binary==2.9.9
 sqlalchemy==2.0.25
 
-# QGIS Processing
-qgis==3.34.3
-
-# XML/JSON
+# XML/JSON (for parsing QGIS project files)
 lxml==5.1.0
 pydantic==2.5.3
 
