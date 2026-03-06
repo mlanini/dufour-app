@@ -242,12 +242,8 @@ export function createSwissLayer(layerConfig, options = {}) {
 
   const source = new WMTS({
     tileUrlFunction: tileUrlFunction,
-    layer: layerConfig.id,
-    matrixSet: '3857',
-    format: `image/${layerConfig.format}`,
     projection: projection,
     tileGrid: tileGrid,
-    style: 'default',
     wrapX: false,
     attributions: layerConfig.attribution
   });
