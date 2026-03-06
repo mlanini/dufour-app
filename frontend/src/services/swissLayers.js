@@ -226,13 +226,27 @@ export function createSwissLayer(layerConfig, options = {}) {
     opacity = layerConfig.opacity || 1
   } = options;
 
+  const tileGrid = createSwissTileGrid();
+  
+  // Create custom tile URL function to properly replace placeholders
+  const tileUrlFunction = (tileCoord) => {
+    if (!tileCoord) return undefined;
+    
+    const z = tileCoord[0];
+    const x = tileCoord[1];
+    const y = tileCoord[2];
+    
+    // SwissTopo WMTS URL format
+    return `https://wmts.geo.admin.ch/1.0.0/${layerConfig.id}/default/current/3857/${z}/${y}/${x}.${layerConfig.format}`;
+  };
+
   const source = new WMTS({
-    url: SWISSTOPO_WMTS_URL,
+    tileUrlFunction: tileUrlFunction,
     layer: layerConfig.id,
     matrixSet: '3857',
     format: `image/${layerConfig.format}`,
     projection: projection,
-    tileGrid: createSwissTileGrid(),
+    tileGrid: tileGrid,
     style: 'default',
     wrapX: false,
     attributions: layerConfig.attribution
