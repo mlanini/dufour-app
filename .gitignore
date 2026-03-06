@@ -61,3 +61,6 @@ build/
 # Temporary files
 *.tmp
 *.temp
+
+# Temporary md
+*.md
