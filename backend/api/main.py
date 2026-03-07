@@ -2,15 +2,18 @@
 Dufour Middleware API
 FastAPI server for managing QGIS projects and PostGIS data uploads
 """
-from fastapi import FastAPI, File, UploadFile, HTTPException, Form
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
 import os
 from pathlib import Path
+import tempfile
+import httpx
 
 from services.project_service import ProjectService
 from services.data_service import DataService
 from services.qwc_service import QWCService
+from services.qgis_storage_service import storage_service
 from models.schemas import ProjectResponse, TableSchema, UploadResponse
 
 # Initialize FastAPI app
@@ -309,6 +312,81 @@ async def get_status():
         return status
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# ==================== QGIS PROJECT STORAGE ENDPOINTS ====================
+
+@app.get("/api/projects")
+async def list_qgis_projects():
+    """
+    List all stored QGIS projects
+    
+    Returns:
+        List of projects with metadata
+    """
+    try:
+        projects = storage_service.list_projects()
+        return {"projects": projects, "count": len(projects)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
+@app.get("/api/projects/{project_name}/wms")
+async def wms_proxy(project_name: str, request: Request):
+    """
+    WMS proxy for stored QGIS projects
+    
+    Retrieves .qgz from PostgreSQL, exports to temp file, forwards to QGIS Server
+    
+    Args:
+        project_name: Project identifier
+        request: FastAPI request with query params (SERVICE, REQUEST, etc)
+    
+    Returns:
+        WMS response (GetCapabilities XML, GetMap PNG, etc)
+    """
+    try:
+        # 1. Retrieve .qgz from PostgreSQL BYTEA
+        qgz_bytes = storage_service.retrieve_qgz(project_name)
+        if not qgz_bytes:
+            raise HTTPException(status_code=404, detail=f"Project {project_name} not found")
+        
+        # 2. Export to temporary file (QGIS Server needs filesystem path)
+        temp_dir = Path(tempfile.gettempdir()) / 'dufour_qgis_projects'
+        temp_dir.mkdir(exist_ok=True)
+        temp_path = temp_dir / f"{project_name}.qgz"
+        
+        # Cache: only write if not exists or outdated
+        if not temp_path.exists() or temp_path.stat().st_size != len(qgz_bytes):
+            temp_path.write_bytes(qgz_bytes)
+        
+        # 3. Forward to QGIS Server with MAP parameter
+        qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://localhost:8080/cgi-bin/qgis_mapserv.fcgi')
+        
+        # Build query string with MAP parameter
+        query_params = dict(request.query_params)
+        query_params['MAP'] = str(temp_path)
+        
+        async with httpx.AsyncClient(timeout=30.0) as client:
+            response = await client.get(qgis_server_url, params=query_params)
+            
+            # Return QGIS Server response with correct Content-Type
+            return Response(
+                content=response.content,
+                status_code=response.status_code,
+                headers={
+                    'Content-Type': response.headers.get('Content-Type', 'application/xml'),
+                    'Access-Control-Allow-Origin': '*'
+                }
+            )
+    
+    except HTTPException:
+        raise
+    except Exception as e:
+        import traceback
+        print(f"WMS proxy error: {e}")
+        print(traceback.format_exc())
+        raise HTTPException(status_code=500, detail=f"WMS proxy error: {str(e)}")
 
 
 if __name__ == "__main__":

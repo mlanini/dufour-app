@@ -1,14 +1,19 @@
 # Dufour Middleware API - Python Dependencies
 
 # Web Framework
-fastapi==0.109.0
-uvicorn[standard]==0.27.0
+fastapi==0.103.2
+uvicorn[standard]==0.24.0
 python-multipart==0.0.9
 httpx==0.26.0
 
 # Database
 psycopg2-binary==2.9.9
 sqlalchemy==2.0.25
+asyncpg==0.29.0  # Async PostgreSQL driver
+
+# Testing
+pytest==8.0.0
+pytest-asyncio==0.23.5
 
 # XML/JSON (for parsing QGIS project files)
 lxml==5.1.0
