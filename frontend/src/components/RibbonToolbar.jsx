@@ -6,7 +6,7 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import '../styles/ribbon.css';
 
-const RibbonToolbar = ({ onToolSelect, editMode, onEditModeChange }) => {
+const RibbonToolbar = ({ onToolSelect }) => {
   const [activeTab, setActiveTab] = useState('maps');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const locale = useSelector(state => state.locale?.current || 'en-US');
@@ -18,6 +18,7 @@ const RibbonToolbar = ({ onToolSelect, editMode, onEditModeChange }) => {
     { id: 'view', label: { 'en-US': 'View', 'de-CH': 'Ansicht', 'fr-FR': 'Vue', 'it-IT': 'Vista' } },
     { id: 'analysis', label: { 'en-US': 'Analysis', 'de-CH': 'Analyse', 'fr-FR': 'Analyse', 'it-IT': 'Analisi' } },
     { id: 'draw', label: { 'en-US': 'Draw', 'de-CH': 'Zeichnen', 'fr-FR': 'Dessiner', 'it-IT': 'Disegna' } },
+    { id: 'orbat', label: { 'en-US': 'ORBAT', 'de-CH': 'ORBAT', 'fr-FR': 'ORBAT', 'it-IT': 'ORBAT' } },
     { id: 'gps', label: { 'en-US': 'GPS', 'de-CH': 'GPS', 'fr-FR': 'GPS', 'it-IT': 'GPS' } },
     { id: 'settings', label: { 'en-US': 'Settings', 'de-CH': 'Einstellungen', 'fr-FR': 'Paramètres', 'it-IT': 'Impostazioni' } }
   ];
@@ -120,6 +121,39 @@ const RibbonToolbar = ({ onToolSelect, editMode, onEditModeChange }) => {
         items: [
           { id: 'edit-redlining', icon: '✏️', label: { 'en-US': 'Edit', 'de-CH': 'Bearbeiten', 'fr-FR': 'Éditer', 'it-IT': 'Modifica' } },
           { id: 'delete-items', icon: '🗑️', label: { 'en-US': 'Delete', 'de-CH': 'Löschen', 'fr-FR': 'Supprimer', 'it-IT': 'Elimina' } }
+        ]
+      }
+    ],
+    // ORBAT TAB - Unit management, Sides, Deploy
+    orbat: [
+      {
+        group: { 'en-US': 'ORBAT', 'de-CH': 'ORBAT', 'fr-FR': 'ORBAT', 'it-IT': 'ORBAT' },
+        items: [
+          { id: 'orbat-panel', icon: '🗂️', label: { 'en-US': 'ORBAT Panel', 'de-CH': 'ORBAT Panel', 'fr-FR': 'Panneau ORBAT', 'it-IT': 'Pannello ORBAT' }, size: 'large' },
+          { id: 'orbat-filter', icon: '🔍', label: { 'en-US': 'Filter', 'de-CH': 'Filter', 'fr-FR': 'Filtre', 'it-IT': 'Filtro' } }
+        ]
+      },
+      {
+        group: { 'en-US': 'Units', 'de-CH': 'Einheiten', 'fr-FR': 'Unités', 'it-IT': 'Unità' },
+        items: [
+          { id: 'add-unit', icon: '➕', label: { 'en-US': 'Add Unit', 'de-CH': 'Einheit hinzufügen', 'fr-FR': 'Ajouter unité', 'it-IT': 'Aggiungi unità' }, size: 'large' },
+          { id: 'add-side', icon: '🛡️', label: { 'en-US': 'Add Side', 'de-CH': 'Seite hinzufügen', 'fr-FR': 'Ajouter côté', 'it-IT': 'Aggiungi lato' } },
+          { id: 'add-group', icon: '👥', label: { 'en-US': 'Add Group', 'de-CH': 'Gruppe hinzufügen', 'fr-FR': 'Ajouter groupe', 'it-IT': 'Aggiungi gruppo' } }
+        ]
+      },
+      {
+        group: { 'en-US': 'Operations', 'de-CH': 'Operationen', 'fr-FR': 'Opérations', 'it-IT': 'Operazioni' },
+        items: [
+          { id: 'deploy-units', icon: '📍', label: { 'en-US': 'Deploy', 'de-CH': 'Bereitstellen', 'fr-FR': 'Déployer', 'it-IT': 'Schiera' }, size: 'large' },
+          { id: 'expand-all', icon: '⬇️', label: { 'en-US': 'Expand All', 'de-CH': 'Alle erweitern', 'fr-FR': 'Tout étendre', 'it-IT': 'Espandi tutto' } },
+          { id: 'collapse-all', icon: '⬆️', label: { 'en-US': 'Collapse All', 'de-CH': 'Alle zusammenfassen', 'fr-FR': 'Tout réduire', 'it-IT': 'Riduci tutto' } }
+        ]
+      },
+      {
+        group: { 'en-US': 'Import/Export', 'de-CH': 'Import/Export', 'fr-FR': 'Import/Export', 'it-IT': 'Importa/Esporta' },
+        items: [
+          { id: 'import-orbat', icon: '📥', label: { 'en-US': 'Import', 'de-CH': 'Importieren', 'fr-FR': 'Importer', 'it-IT': 'Importa' }, size: 'large' },
+          { id: 'export-orbat', icon: '📤', label: { 'en-US': 'Export', 'de-CH': 'Exportieren', 'fr-FR': 'Exporter', 'it-IT': 'Esporta' } }
         ]
       }
     ],
@@ -283,37 +317,6 @@ const RibbonToolbar = ({ onToolSelect, editMode, onEditModeChange }) => {
             <div className="ribbon-group-label">{getLabel(group.group)}</div>
           </div>
         ))}
-
-        {/* Edit Mode Switcher - integrated in ribbon content */}
-        <div className="ribbon-group ribbon-mode-switcher-group">
-          <div className="ribbon-group-tools edit-mode-switcher">
-            <button
-              className={`mode-btn ${editMode === 'map' ? 'active' : ''}`}
-              onClick={() => onEditModeChange && onEditModeChange('map')}
-              title={getLabel({ 'en-US': 'Map Edit Mode', 'de-CH': 'Karten-Modus', 'fr-FR': 'Mode Carte', 'it-IT': 'Modalità Mappa' })}
-            >
-              <div className="ribbon-tool-icon">🗺️</div>
-              <div className="ribbon-tool-label">{getLabel({ 'en-US': 'Map', 'de-CH': 'Karte', 'fr-FR': 'Carte', 'it-IT': 'Mappa' })}</div>
-            </button>
-            <button
-              className={`mode-btn ${editMode === 'grid' ? 'active' : ''}`}
-              onClick={() => onEditModeChange && onEditModeChange('grid')}
-              title={getLabel({ 'en-US': 'Grid Edit Mode', 'de-CH': 'Tabellen-Modus', 'fr-FR': 'Mode Grille', 'it-IT': 'Modalità Griglia' })}
-            >
-              <div className="ribbon-tool-icon">📋</div>
-              <div className="ribbon-tool-label">{getLabel({ 'en-US': 'Grid', 'de-CH': 'Tabelle', 'fr-FR': 'Grille', 'it-IT': 'Griglia' })}</div>
-            </button>
-            <button
-              className={`mode-btn ${editMode === 'chart' ? 'active' : ''}`}
-              onClick={() => onEditModeChange && onEditModeChange('chart')}
-              title={getLabel({ 'en-US': 'Chart Edit Mode', 'de-CH': 'Diagramm-Modus', 'fr-FR': 'Mode Diagramme', 'it-IT': 'Modalità Organigramma' })}
-            >
-              <div className="ribbon-tool-icon">📊</div>
-              <div className="ribbon-tool-label">{getLabel({ 'en-US': 'Chart', 'de-CH': 'Diagramm', 'fr-FR': 'Diagramme', 'it-IT': 'Organigramma' })}</div>
-            </button>
-          </div>
-          <div className="ribbon-group-label">{getLabel({ 'en-US': 'Edit Mode', 'de-CH': 'Bearbeitungsmodus', 'fr-FR': 'Mode d\'édition', 'it-IT': 'Modalità Modifica' })}</div>
-        </div>
       </div>
 
       {/* Mobile menu overlay */}

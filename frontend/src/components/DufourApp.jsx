@@ -11,6 +11,7 @@ import SidePanel from './SidePanel';
 import MapEditPanel from './MapEditPanel';
 import GridEditPanel from './GridEditPanel';
 import ChartEditPanel from './ChartEditPanel';
+import OrbatPanel from './panels/OrbatPanel';
 import MeasurePlugin, { MeasureMode } from '../plugins/Measure';
 import RedliningPlugin, { DrawMode } from '../plugins/Redlining';
 import '../styles/ribbon.css';
@@ -32,6 +33,7 @@ const DufourApp = () => {
   const [measureMode, setMeasureMode] = useState(null);
   const [redliningActive, setRedliningActive] = useState(false);
   const [redliningMode, setRedliningMode] = useState(null);
+  const [orbatPanelOpen, setOrbatPanelOpen] = useState(false);
 
   const dispatch = useDispatch();
   const locale = useSelector(state => state.locale?.current || 'en-US');
@@ -183,6 +185,27 @@ const DufourApp = () => {
         setRightPanelOpen(true);
         break;
       
+      // ORBAT tools
+      case 'orbat-panel':
+        setOrbatPanelOpen(true);
+        break;
+      
+      case 'add-unit':
+      case 'add-side':
+      case 'add-group':
+      case 'deploy-units':
+      case 'expand-all':
+      case 'collapse-all':
+      case 'import-orbat':
+      case 'export-orbat':
+      case 'orbat-filter':
+        // Open ORBAT panel if not already open
+        if (!orbatPanelOpen) {
+          setOrbatPanelOpen(true);
+        }
+        // Tool-specific actions will be handled by OrbatPanel
+        break;
+      
       default:
         console.log('Tool not yet implemented:', toolId);
     }
@@ -297,6 +320,14 @@ const DufourApp = () => {
             />
           )}
         </div>
+
+        {/* ORBAT Panel (floating overlay) */}
+        {orbatPanelOpen && (
+          <OrbatPanel
+            map={mapInstance}
+            onClose={() => setOrbatPanelOpen(false)}
+          />
+        )}
 
         {/* Right side panel */}
         {rightPanelOpen && (

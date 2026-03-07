@@ -1,0 +1,657 @@
+/**
+ * ORBAT Panel Styles
+ * Modern, clean styling for the hierarchical unit management panel
+ */
+
+.orbat-panel {
+  position: fixed;
+  top: 80px;
+  right: 20px;
+  width: 400px;
+  max-height: calc(100vh - 120px);
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+  overflow: hidden;
+}
+
+/* Header */
+.orbat-panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  border-bottom: 1px solid #E5E7EB;
+  background: linear-gradient(to bottom, #F9FAFB, #F3F4F6);
+}
+
+.header-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.header-title svg {
+  color: #3B82F6;
+}
+
+.header-title h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1F2937;
+}
+
+.close-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 20px;
+  color: #6B7280;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s;
+}
+
+.close-btn:hover {
+  background: #F3F4F6;
+  color: #1F2937;
+}
+
+/* Toolbar */
+.orbat-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-bottom: 1px solid #E5E7EB;
+  background: #FAFAFA;
+  flex-wrap: wrap;
+}
+
+.toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 8px;
+  border-right: 1px solid #E5E7EB;
+}
+
+.toolbar-group:last-child {
+  border-right: none;
+  margin-left: auto;
+}
+
+.toolbar-btn {
+  background: white;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  padding: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  color: #6B7280;
+}
+
+.toolbar-btn:hover:not(:disabled) {
+  background: #F3F4F6;
+  border-color: #9CA3AF;
+  color: #1F2937;
+}
+
+.toolbar-btn:active:not(:disabled) {
+  background: #E5E7EB;
+}
+
+.toolbar-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.toolbar-btn.active {
+  background: #3B82F6;
+  border-color: #3B82F6;
+  color: white;
+}
+
+.toolbar-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+/* Filters */
+.orbat-filters {
+  padding: 12px 16px;
+  border-bottom: 1px solid #E5E7EB;
+  background: #F9FAFB;
+}
+
+.filter-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.filter-row:last-child {
+  margin-bottom: 0;
+}
+
+.filter-group {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  padding: 6px 10px;
+}
+
+.filter-group svg {
+  width: 16px;
+  height: 16px;
+  color: #9CA3AF;
+}
+
+.filter-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  color: #1F2937;
+}
+
+.filter-input::placeholder {
+  color: #9CA3AF;
+}
+
+.filter-select {
+  flex: 1;
+  padding: 6px 10px;
+  border: 1px solid #D1D5DB;
+  border-radius: 4px;
+  font-size: 14px;
+  background: white;
+  color: #1F2937;
+  cursor: pointer;
+  outline: none;
+}
+
+.filter-select:hover {
+  border-color: #9CA3AF;
+}
+
+.filter-select:focus {
+  border-color: #3B82F6;
+}
+
+/* Sides List */
+.orbat-sides {
+  border-bottom: 1px solid #E5E7EB;
+}
+
+.side-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-bottom: 1px solid #F3F4F6;
+  background: white;
+  transition: background 0.2s;
+}
+
+.side-header:hover {
+  background: #F9FAFB;
+}
+
+.side-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.side-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.side-name {
+  font-weight: 500;
+  color: #1F2937;
+  font-size: 14px;
+}
+
+.side-badge {
+  font-size: 12px;
+  color: #6B7280;
+  background: #F3F4F6;
+  padding: 2px 6px;
+  border-radius: 10px;
+}
+
+.side-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.side-actions button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  color: #6B7280;
+  transition: all 0.2s;
+}
+
+.side-actions button:hover {
+  background: #F3F4F6;
+  color: #1F2937;
+}
+
+.side-actions button svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* ORBAT Tree */
+.orbat-tree {
+  flex: 1;
+  overflow-y: auto;
+  padding: 8px 0;
+}
+
+.orbat-tree-item-wrapper {
+  width: 100%;
+}
+
+.orbat-tree-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px 6px 8px;
+  cursor: pointer;
+  transition: background 0.15s;
+  border-left: 3px solid transparent;
+}
+
+.orbat-tree-item:hover {
+  background: #F9FAFB;
+}
+
+.orbat-tree-item.selected {
+  background: #EFF6FF;
+  border-left-color: #3B82F6;
+}
+
+.orbat-tree-item.dragging {
+  opacity: 0.5;
+}
+
+.orbat-tree-item.drag-over {
+  background: #DBEAFE;
+  border-top: 2px solid #3B82F6;
+}
+
+/* Expand Button */
+.expand-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #6B7280;
+  border-radius: 3px;
+  transition: all 0.2s;
+  min-width: 20px;
+}
+
+.expand-btn:hover:not(:disabled) {
+  background: #F3F4F6;
+  color: #1F2937;
+}
+
+.expand-btn:disabled {
+  cursor: default;
+}
+
+.expand-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.expand-placeholder {
+  width: 16px;
+  height: 16px;
+  display: block;
+}
+
+/* Checkbox */
+.unit-checkbox {
+  cursor: pointer;
+  margin: 0;
+  width: 14px;
+  height: 14px;
+  accent-color: #3B82F6;
+}
+
+/* Military Symbol */
+.unit-symbol {
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #6B7280;
+  border-radius: 4px;
+  background: white;
+  flex-shrink: 0;
+}
+
+/* Unit Info */
+.unit-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.unit-name {
+  font-size: 14px;
+  font-weight: 500;
+  color: #1F2937;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.unit-designation {
+  color: #6B7280;
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.unit-details {
+  font-size: 12px;
+  color: #6B7280;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.unit-echelon {
+  font-weight: 500;
+}
+
+.unit-type {
+  color: #9CA3AF;
+}
+
+.unit-status {
+  font-size: 11px;
+}
+
+/* Visibility Button */
+.visibility-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  color: #6B7280;
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.orbat-tree-item:hover .visibility-btn {
+  opacity: 1;
+}
+
+.visibility-btn:hover {
+  background: #F3F4F6;
+  color: #1F2937;
+}
+
+.visibility-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+/* Unit Count Badge */
+.unit-count-badge {
+  background: #3B82F6;
+  color: white;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+
+/* Tree Children */
+.orbat-tree-children {
+  width: 100%;
+}
+
+/* Empty State */
+.orbat-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: #9CA3AF;
+}
+
+.orbat-empty svg {
+  width: 64px;
+  height: 64px;
+  color: #D1D5DB;
+  margin-bottom: 16px;
+}
+
+.orbat-empty p {
+  margin: 0 0 20px 0;
+  font-size: 16px;
+}
+
+.btn-primary {
+  background: #3B82F6;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-primary:hover {
+  background: #2563EB;
+}
+
+.btn-primary:active {
+  background: #1D4ED8;
+}
+
+/* Context Menu */
+.orbat-context-menu {
+  position: fixed;
+  background: white;
+  border: 1px solid #E5E7EB;
+  border-radius: 6px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  padding: 4px 0;
+  min-width: 180px;
+  z-index: 10000;
+}
+
+.context-menu-item {
+  padding: 8px 16px;
+  font-size: 14px;
+  color: #1F2937;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.context-menu-item:hover {
+  background: #F3F4F6;
+}
+
+.context-menu-item:active {
+  background: #E5E7EB;
+}
+
+.context-menu-separator {
+  height: 1px;
+  background: #E5E7EB;
+  margin: 4px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .orbat-panel {
+    top: 60px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-height: calc(100vh - 80px);
+  }
+
+  .header-title h2 {
+    font-size: 16px;
+  }
+
+  .toolbar-group {
+    padding: 0 4px;
+  }
+
+  .orbat-tree-item {
+    padding: 8px 12px 8px 8px;
+  }
+
+  .unit-name {
+    font-size: 13px;
+  }
+
+  .unit-details {
+    font-size: 11px;
+  }
+}
+
+/* Dark Mode Support */
+@media (prefers-color-scheme: dark) {
+  .orbat-panel {
+    background: #1F2937;
+    color: #F9FAFB;
+  }
+
+  .orbat-panel-header {
+    border-bottom-color: #374151;
+    background: linear-gradient(to bottom, #111827, #1F2937);
+  }
+
+  .header-title h2 {
+    color: #F9FAFB;
+  }
+
+  .orbat-toolbar {
+    border-bottom-color: #374151;
+    background: #111827;
+  }
+
+  .toolbar-btn {
+    background: #374151;
+    border-color: #4B5563;
+    color: #D1D5DB;
+  }
+
+  .toolbar-btn:hover:not(:disabled) {
+    background: #4B5563;
+    border-color: #6B7280;
+    color: #F9FAFB;
+  }
+
+  .orbat-filters {
+    background: #111827;
+    border-bottom-color: #374151;
+  }
+
+  .filter-group {
+    background: #374151;
+    border-color: #4B5563;
+  }
+
+  .filter-input {
+    background: transparent;
+    color: #F9FAFB;
+  }
+
+  .filter-select {
+    background: #374151;
+    border-color: #4B5563;
+    color: #F9FAFB;
+  }
+
+  .side-header {
+    border-bottom-color: #374151;
+    background: #1F2937;
+  }
+
+  .side-header:hover {
+    background: #111827;
+  }
+
+  .side-name {
+    color: #F9FAFB;
+  }
+
+  .orbat-tree-item:hover {
+    background: #111827;
+  }
+
+  .orbat-tree-item.selected {
+    background: #1E3A8A;
+    border-left-color: #3B82F6;
+  }
+
+  .unit-symbol {
+    background: #374151;
+  }
+
+  .unit-name {
+    color: #F9FAFB;
+  }
+
+  .orbat-context-menu {
+    background: #1F2937;
+    border-color: #374151;
+  }
+
+  .context-menu-item {
+    color: #F9FAFB;
+  }
+
+  .context-menu-item:hover {
+    background: #374151;
+  }
+}
