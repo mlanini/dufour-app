@@ -44,7 +44,7 @@ const PrintPanel = ({ map, onAction }) => {
         SRS: projection,
         DPI: dpi,
         TEMPLATE: layout.replace(' ', '_').toLowerCase(),
-        map0:extent: extent.join(','),
+        'map0:extent': extent.join(','),
         LAYERS: visibleLayers,
         // Custom parameters
         ...(title && { map_title: title })
