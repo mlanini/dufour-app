@@ -2,7 +2,7 @@
 # Complete deployment configuration
 
 services:
-  # Backend API Service (FastAPI)
+  # Backend API + QGIS Server (Embedded in same container)
   - type: web
     name: dufour-api
     runtime: docker
@@ -11,7 +11,7 @@ services:
     repo: https://github.com/mlanini/dufour-app
     branch: main
     region: frankfurt
-    plan: free
+    plan: starter  # QGIS Server richiede più memoria (512MB minimum)
     envVars:
       - key: POSTGIS_HOST
         value: postgresql-intelligeo.alwaysdata.net
@@ -20,61 +20,54 @@ services:
       - key: POSTGIS_DB
         value: intelligeo_dufour
       - key: POSTGIS_USER
-        value: intelligeo_dufour_admin
+        value: intelligeo_dufour
       - key: POSTGIS_PASSWORD
-        sync: false  # Configure manually in Render dashboard (Secret)
+        sync: false  # Configure manually in Render dashboard (Secret: Dufour.00r)
       - key: QGIS_SERVER_URL
-        value: https://dufour-qgis.onrender.com
-      - key: PROJECTS_DIR
-        value: /data/projects
-      - key: QWC_CONFIG_DIR
-        value: /qwc-config
-    healthCheckPath: /
-    autoDeploy: true
-    
-  # QGIS Server Service (Docker)
-  - type: web
-    name: dufour-qgis
-    runtime: docker
-    repo: https://github.com/mlanini/dufour-app
-    branch: main
-    region: frankfurt
-    plan: starter  # QGIS Server richiede più risorse
-    dockerCommand: /usr/local/bin/run_qgis_server.sh
-    envVars:
+        value: http://localhost:8080  # QGIS Server embedded on port 8080
+      - key: LOG_LEVEL
+        value: INFO
       - key: QGIS_SERVER_LOG_LEVEL
-        value: "0"
+        value: "1"  # 0=INFO, 1=WARNING, 2=CRITICAL
       - key: QGIS_SERVER_PARALLEL_RENDERING
-        value: "true"
-    # Note: Richiede Dockerfile custom per QGIS Server in root
-    dockerfilePath: ./Dockerfile.qgis
+        value: "1"
+      - key: QGIS_SERVER_MAX_THREADS
+        value: "2"
+      - key: QGIS_SERVER_IGNORE_BAD_LAYERS
+        value: "1"
+    healthCheckPath: /
     autoDeploy: true
 
   # Frontend Web Service (Vite + React)
   - type: web
-    name: dufour-frontend
+    name: dufour-app
     runtime: docker
     dockerfilePath: ./Dockerfile
     repo: https://github.com/mlanini/dufour-app
     branch: main
     region: frankfurt
     plan: free
+    buildCommand: echo "Building web app with Vite..."
     envVars:
       - key: NODE_ENV
         value: production
       - key: VITE_API_URL
         value: https://dufour-api.onrender.com
-      - key: VITE_QGIS_SERVER_URL
-        value: https://dufour-qgis.onrender.com
     healthCheckPath: /
     autoDeploy: true
 
-# Note: Using external PostgreSQL database (alwaysdata.net)
-# Database: intelligeo_dufour (PostgreSQL 16 + PostGIS)
-# Extensions already enabled: pgcrypto, pgvector, PostGIS, PostGIS Raster, pgRouting, PostGIS Topology
+# Architecture Notes:
+# - Backend API + QGIS Server embedded in single container (Port 3000 + 8080)
+# - QGIS projects stored in PostgreSQL BYTEA column (max 50MB per project)
+# - Frontend served via Nginx (static files)
+# - Database: PostgreSQL 16 + PostGIS at alwaysdata.net
+# - Cold start time: ~30s for backend (acceptable for free tier)
 
-# Note: Per volumi persistenti (progetti QGIS), considerare:
-# - Render Disks (servizi a pagamento)
-# - External storage (S3, Cloudinary, ecc.)
-# - Database BLOB storage per file .qgs
+# Deployment Instructions:
+# 1. Push code to GitHub repository
+# 2. Create Render account and connect GitHub repo
+# 3. Import render.yaml blueprint
+# 4. Set POSTGIS_PASSWORD secret in Render dashboard
+# 5. Deploy all services
+# 6. Access frontend at https://dufour-app.onrender.com
 
