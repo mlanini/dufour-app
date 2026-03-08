@@ -132,6 +132,21 @@ class DatabaseConnection:
             self._initialize_connections()
         return self._async_session_factory()
     
+    def get_connection_config(self) -> dict:
+        """
+        Get database connection configuration
+        
+        Returns:
+            Dictionary with connection parameters
+        """
+        return {
+            'host': os.getenv('POSTGIS_HOST', 'postgresql-intelligeo.alwaysdata.net'),
+            'port': int(os.getenv('POSTGIS_PORT', '5432')),
+            'database': os.getenv('POSTGIS_DB', 'intelligeo_dufour'),
+            'user': os.getenv('POSTGIS_USER', 'intelligeo_dufour'),
+            'password': os.getenv('POSTGIS_PASSWORD', '')
+        }
+    
     @asynccontextmanager
     async def session_scope(self):
         """

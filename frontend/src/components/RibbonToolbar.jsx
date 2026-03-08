@@ -30,7 +30,13 @@ const RibbonToolbar = ({ onToolSelect }) => {
         group: { 'en-US': 'Layers', 'de-CH': 'Ebenen', 'fr-FR': 'Couches', 'it-IT': 'Livelli' },
         items: [
           { id: 'layer-tree', icon: '📑', label: { 'en-US': 'Layer Tree', 'de-CH': 'Ebenen', 'fr-FR': 'Arbre', 'it-IT': 'Albero' }, size: 'large' },
-          { id: 'layer-catalog', icon: '📚', label: { 'en-US': 'Catalog', 'de-CH': 'Katalog', 'fr-FR': 'Catalogue', 'it-IT': 'Catalogo' }, size: 'large' },
+          { id: 'layer-catalog', icon: '📚', label: { 'en-US': 'Catalog', 'de-CH': 'Katalog', 'fr-FR': 'Catalogue', 'it-IT': 'Catalogo' }, size: 'large' }
+        ]
+      },
+      {
+        group: { 'en-US': 'Projects', 'de-CH': 'Projekte', 'fr-FR': 'Projets', 'it-IT': 'Progetti' },
+        items: [
+          { id: 'upload-project', icon: '📤', label: { 'en-US': 'Upload', 'de-CH': 'Hochladen', 'fr-FR': 'Télécharger', 'it-IT': 'Carica' }, size: 'large' },
           { id: 'import-layer', icon: '📥', label: { 'en-US': 'Import', 'de-CH': 'Import', 'fr-FR': 'Importer', 'it-IT': 'Importa' } }
         ]
       },

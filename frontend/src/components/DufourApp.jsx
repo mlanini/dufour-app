@@ -12,6 +12,7 @@ import MapEditPanel from './MapEditPanel';
 import GridEditPanel from './GridEditPanel';
 import ChartEditPanel from './ChartEditPanel';
 import OrbatPanel from './panels/OrbatPanel';
+import UploadPanel from './panels/UploadPanel';
 import MeasurePlugin, { MeasureMode } from '../plugins/Measure';
 import RedliningPlugin, { DrawMode } from '../plugins/Redlining';
 import '../styles/ribbon.css';
@@ -34,6 +35,7 @@ const DufourApp = () => {
   const [redliningActive, setRedliningActive] = useState(false);
   const [redliningMode, setRedliningMode] = useState(null);
   const [orbatPanelOpen, setOrbatPanelOpen] = useState(false);
+  const [uploadPanelOpen, setUploadPanelOpen] = useState(false);
 
   const dispatch = useDispatch();
   const locale = useSelector(state => state.locale?.current || 'en-US');
@@ -55,6 +57,11 @@ const DufourApp = () => {
       case 'search':
         setLeftPanelContent('search');
         setLeftPanelOpen(true);
+        break;
+      
+      case 'import-layer':
+      case 'upload-project':
+        setUploadPanelOpen(true);
         break;
       
       case 'identify':
@@ -327,6 +334,41 @@ const DufourApp = () => {
             map={mapInstance}
             onClose={() => setOrbatPanelOpen(false)}
           />
+        )}
+        
+        {/* Upload Panel (floating overlay) */}
+        {uploadPanelOpen && (
+          <div style={{
+            position: 'fixed',
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 10000
+          }}>
+            <div style={{
+              backgroundColor: 'white',
+              borderRadius: '8px',
+              boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)',
+              maxWidth: '600px',
+              width: '90%',
+              maxHeight: '90vh',
+              overflow: 'auto'
+            }}>
+              <UploadPanel
+                onClose={() => setUploadPanelOpen(false)}
+                onUploadSuccess={(project) => {
+                  console.log('Upload successful:', project);
+                  // TODO: Refresh project list
+                  setUploadPanelOpen(false);
+                }}
+              />
+            </div>
+          </div>
         )}
 
         {/* Right side panel */}
