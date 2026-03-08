@@ -11,6 +11,7 @@ import TerrainPanel from './panels/TerrainPanel';
 import ImportPanel from './panels/ImportPanel';
 import PrintPanel from './panels/PrintPanel';
 import SettingsPanel from './panels/SettingsPanel';
+import MilitarySymbolLibrary from './panels/MilitarySymbolLibrary';
 
 const SidePanel = ({ side, content, onClose, onAction, map }) => {
   // Auto-close on mobile when action is performed
@@ -68,6 +69,12 @@ const SidePanel = ({ side, content, onClose, onAction, map }) => {
       'de-CH': 'Einstellungen',
       'fr-FR': 'Paramètres',
       'it-IT': 'Impostazioni'
+    },
+    'military-symbols': {
+      'en-US': 'Military Symbols',
+      'de-CH': 'Militärische Symbole',
+      'fr-FR': 'Symboles militaires',
+      'it-IT': 'Simboli militari'
     }
   };
 
@@ -89,6 +96,12 @@ const SidePanel = ({ side, content, onClose, onAction, map }) => {
         return <PrintPanel onAction={handleAction} />;
       case 'settings':
         return <SettingsPanel onAction={handleAction} />;
+      case 'military-symbols':
+        return <MilitarySymbolLibrary onClose={onClose} onAddSymbol={(symbol) => {
+          console.log('Add military symbol to map:', symbol);
+          // TODO: Integrate with map to add symbol as feature
+          handleAction();
+        }} />;
       default:
         return <div>Panel content: {content}</div>;
     }

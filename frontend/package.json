@@ -26,7 +26,8 @@
     "uuid": "^9.0.1",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
-    "xml2js": "^0.6.2"
+    "xml2js": "^0.6.2",
+    "milsymbol": "^2.2.0"
   },
   "devDependencies": {
     "@types/react": "^18.2.56",

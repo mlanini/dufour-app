@@ -168,6 +168,14 @@ const DufourApp = () => {
         setActiveTool(toolId);
         break;
       
+      // Military symbols
+      case 'military-symbols':
+      case 'unit-symbols':
+      case 'equipment-symbols':
+        setLeftPanelContent('military-symbols');
+        setLeftPanelOpen(true);
+        break;
+      
       case 'slope':
       case 'viewshed':
         setActiveTool(toolId);

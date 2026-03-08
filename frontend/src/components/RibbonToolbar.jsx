@@ -137,6 +137,14 @@ const RibbonToolbar = ({ onToolSelect }) => {
         ]
       },
       {
+        group: { 'en-US': 'Military Symbols', 'de-CH': 'Militärische Symbole', 'fr-FR': 'Symboles militaires', 'it-IT': 'Simboli militari' },
+        items: [
+          { id: 'military-symbols', icon: '🎖️', label: { 'en-US': 'Military Symbols', 'de-CH': 'Militärsymbole', 'fr-FR': 'Symboles militaires', 'it-IT': 'Simboli militari' }, size: 'large' },
+          { id: 'unit-symbols', icon: '🪖', label: { 'en-US': 'Units', 'de-CH': 'Einheiten', 'fr-FR': 'Unités', 'it-IT': 'Unità' } },
+          { id: 'equipment-symbols', icon: '🚜', label: { 'en-US': 'Equipment', 'de-CH': 'Ausrüstung', 'fr-FR': 'Équipement', 'it-IT': 'Equipaggiamento' } }
+        ]
+      },
+      {
         group: { 'en-US': 'Edit', 'de-CH': 'Bearbeiten', 'fr-FR': 'Éditer', 'it-IT': 'Modifica' },
         items: [
           { id: 'edit-redlining', icon: '✏️', label: { 'en-US': 'Edit', 'de-CH': 'Bearbeiten', 'fr-FR': 'Éditer', 'it-IT': 'Modifica' } },
