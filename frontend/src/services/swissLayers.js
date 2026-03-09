@@ -12,7 +12,8 @@ import { getWidth, getTopLeft } from 'ol/extent';
 // SwissTopo WMTS configuration
 // Always use proxy to avoid CORS issues (both dev and production)
 const WMTS_BASE = '/wmts';
-const SWISSTOPO_WMTS_URL = `${WMTS_BASE}/1.0.0/{Layer}/default/current/3857/{TileMatrix}/{TileRow}/{TileCol}.{Format}`;
+// geo.admin.ch uses XYZ tile format: z/y/x (not WMTS TileMatrix/TileRow/TileCol)
+const SWISSTOPO_WMTS_URL = `${WMTS_BASE}/1.0.0/{Layer}/default/current/3857/{z}/{y}/{x}.{Format}`;
 
 // Web Mercator projection extent
 const projection = getProjection('EPSG:3857');
