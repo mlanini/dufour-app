@@ -45,6 +45,10 @@ RUN pip3 install --no-cache-dir -r requirements.txt
 WORKDIR /milsymbol
 COPY milsymbol-server/package.json milsymbol-server/package-lock.json* ./
 RUN npm install --production
+
+# Verify canvas native module loads correctly (fail build early if broken)
+RUN node -e "require('canvas'); require('milsymbol'); console.log('✅ milsymbol + canvas OK')"
+
 COPY milsymbol-server/index.js .
 
 # Copy application code
@@ -76,26 +80,46 @@ ENV MILSYMBOL_PORT=2525 \
 RUN echo '#!/bin/bash\n\
 set -e\n\
 \n\
+echo "=== Starting Dufour Backend ==="\n\
+\n\
 # Start QGIS Server via spawn-fcgi\n\
 Xvfb :99 -screen 0 1024x768x24 -nolisten tcp &\n\
 export DISPLAY=:99\n\
 spawn-fcgi -n -p 8080 -f /usr/lib/cgi-bin/qgis_mapserv.fcgi &\n\
 echo "✅ QGIS Server started on port 8080"\n\
 \n\
-# Start Milsymbol Server (sidecar)\n\
-cd /milsymbol && node index.js &\n\
-echo "🎖️  Milsymbol Server started on port ${MILSYMBOL_PORT:-2525}"\n\
+# Start Milsymbol Server (sidecar) with log capture\n\
+cd /milsymbol && node index.js > /var/log/milsymbol.log 2>&1 &\n\
+MILSYMBOL_PID=$!\n\
+echo "🎖️  Milsymbol Server PID=$MILSYMBOL_PID starting on port ${MILSYMBOL_PORT:-2525}"\n\
 \n\
-# Wait for milsymbol server to be ready\n\
-for i in $(seq 1 10); do\n\
+# Wait for milsymbol server to be ready (up to 10s)\n\
+MILSYMBOL_READY=0\n\
+for i in $(seq 1 20); do\n\
+  # Check if process is still alive\n\
+  if ! kill -0 $MILSYMBOL_PID 2>/dev/null; then\n\
+    echo "❌ Milsymbol Server process died! Log output:"\n\
+    cat /var/log/milsymbol.log\n\
+    echo "--- Attempting restart ---"\n\
+    cd /milsymbol && node index.js > /var/log/milsymbol.log 2>&1 &\n\
+    MILSYMBOL_PID=$!\n\
+  fi\n\
   if curl -sf http://localhost:${MILSYMBOL_PORT:-2525}/health > /dev/null 2>&1; then\n\
-    echo "✅ Milsymbol Server ready"\n\
+    echo "✅ Milsymbol Server ready (attempt $i)"\n\
+    MILSYMBOL_READY=1\n\
     break\n\
   fi\n\
   sleep 0.5\n\
 done\n\
 \n\
+if [ "$MILSYMBOL_READY" -eq 0 ]; then\n\
+  echo "⚠️  WARNING: Milsymbol Server not ready after 10s. Log:"\n\
+  cat /var/log/milsymbol.log\n\
+  echo "--- Continuing anyway (symbol endpoints will return errors) ---"\n\
+fi\n\
+\n\
 # Start FastAPI (foreground)\n\
+echo "🚀 Starting FastAPI on port 3000"\n\
 exec uvicorn main:app --host 0.0.0.0 --port 3000\n\
 ' > /start.sh && chmod +x /start.sh
 

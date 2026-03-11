@@ -922,12 +922,35 @@ async def symbols_health():
     """
     server_health = await symbol_service.health_check()
     cache_stats = symbol_service.get_cache_stats()
+
+    # Add diagnostic info when offline
+    if not server_health.get("online"):
+        import subprocess
+        diag = {}
+        try:
+            result = subprocess.run(
+                ["pgrep", "-a", "node"], capture_output=True, text=True, timeout=2
+            )
+            diag["node_processes"] = result.stdout.strip() or "none"
+        except Exception:
+            diag["node_processes"] = "pgrep unavailable"
+        try:
+            with open("/var/log/milsymbol.log", "r") as f:
+                lines = f.readlines()
+                diag["milsymbol_log_tail"] = "".join(lines[-20:]).strip()
+        except FileNotFoundError:
+            diag["milsymbol_log_tail"] = "log file not found"
+        except Exception as e:
+            diag["milsymbol_log_tail"] = f"error reading log: {e}"
+        server_health["diagnostics"] = diag
+
     return {
         **server_health,
         "cache": cache_stats,
         "config": {
             "default_format": os.getenv("DEFAULT_SIDC_FORMAT", "APP-6D"),
-            "default_size": int(os.getenv("MILSYMBOL_DEFAULT_SIZE", "100"))
+            "default_size": int(os.getenv("MILSYMBOL_DEFAULT_SIZE", "100")),
+            "server_url": os.getenv("MILSYMBOL_SERVER_URL", "http://localhost:2525"),
         }
     }
 
@@ -1053,7 +1076,10 @@ async def render_symbol(
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except ConnectionError as e:
-        raise HTTPException(status_code=502, detail=str(e))
+        raise HTTPException(
+            status_code=502,
+            detail=f"{str(e)} Check /api/symbols/health for diagnostics."
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Symbol rendering failed: {str(e)}")
 
