@@ -1,8 +1,14 @@
 {
-  "translationsPath": "",
+  "translationsPath": "translations",
   "loadTranslationOverrides": false,
   "assetsPath": "assets",
   "themesUrl": "/themes.json",
+  "availableLocales": {
+    "en-US": "English",
+    "de-CH": "Deutsch",
+    "fr-FR": "Français",
+    "it-IT": "Italiano"
+  },
   "urlPositionFormat": "centerAndZoom",
   "urlPositionCrs": "",
   "omitUrlParameterUpdates": false,
