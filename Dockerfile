@@ -1,24 +1,18 @@
-# Multi-stage production build 
+# Multi-stage production build – QWC2 frontend (Webpack)
 FROM node:18-alpine AS builder
 
 WORKDIR /app
 
 # Copy package files
-COPY frontend/package*.json ./
+COPY frontend/package*.json frontend/.babelrc.json ./
 
-# Install dependencies (including devDependencies for build)
+# Install dependencies
 RUN npm install
 
 # Copy source code
 COPY frontend/ ./
 
-# Build arguments for environment variables
-ARG VITE_API_URL=https://dufour-api.onrender.com
-
-# Set as environment variables for Vite build
-ENV VITE_API_URL=${VITE_API_URL}
-
-# Build the application
+# Build the application (Webpack production build → prod/)
 RUN npm run build
 
 # Production stage with Nginx
@@ -27,8 +21,8 @@ FROM nginx:alpine
 # Copy custom nginx config (for Render.com - no upstream proxy)
 COPY nginx/nginx-render.conf /etc/nginx/nginx.conf
 
-# Copy built frontend from builder stage
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built frontend from builder stage (Webpack outputs to prod/)
+COPY --from=builder /app/prod /usr/share/nginx/html
 
 # Create cache directory for nginx proxy cache
 RUN mkdir -p /var/cache/nginx && \

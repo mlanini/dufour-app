@@ -1,2 +1,0 @@
-This is not a QGZ file.
-Just plain text for testing validation.

@@ -763,6 +763,30 @@ async def list_tables(
 
 # ==================== QWC ENDPOINTS ====================
 
+@app.get("/themes.json", tags=["qwc2"])
+async def get_themes_json(request: Request):
+    """
+    # QWC2 Themes Configuration
+
+    Generate a full QWC2-compatible themes.json dynamically from stored projects.
+    This endpoint is consumed by QWC2 StandardApp at startup.
+
+    ### Returns:
+    Complete QWC2 themes.json with:
+    - Theme items (one per uploaded QGIS project)
+    - Background layers (ArcGIS, SwissTopo, OSM)
+    - Default scales, CRS, print settings
+    """
+    try:
+        # Determine base URL from request for WMS proxy URLs
+        api_base_url = str(request.base_url).rstrip('/')
+        themes = await qwc_service.generate_full_themes_json(api_base_url)
+        return JSONResponse(content=themes)
+    except Exception as e:
+        logger.error(f"Error generating themes.json: {e}")
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @app.get("/api/v1/themes", tags=["qwc2"])
 async def list_themes():
     """

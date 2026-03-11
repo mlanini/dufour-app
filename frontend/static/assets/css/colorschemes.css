@@ -1,0 +1,102 @@
+/**
+ * QWC2 Color Schemes – Dufour-app
+ * High-contrast and dark themes for the QWC2 interface.
+ */
+
+/* === High-Contrast Theme === */
+:root[data-theme="highcontrast"] {
+  /* General */
+  --panelbar-bg: #000;
+  --panelbar-border: 1px solid #fff;
+  --panelbar-color: #fff;
+  --window-bg: #000;
+  --window-border: 2px solid #fff;
+  --window-color: #fff;
+  --input-bg: #000;
+  --input-border: 2px solid #fff;
+  --input-color: #fff;
+  --input-focus-border: 2px solid #ff0;
+  --button-bg: #000;
+  --button-border: 2px solid #fff;
+  --button-color: #fff;
+  --button-hover-bg: #fff;
+  --button-hover-color: #000;
+  --button-active-bg: #ff0;
+  --button-active-color: #000;
+  /* Title bar */
+  --titlebar-bg: #000;
+  --titlebar-color: #fff;
+  --titlebar-border: 2px solid #fff;
+  /* Toolbar */
+  --toolbar-bg: #000;
+  --toolbar-border: 2px solid #fff;
+  --toolbar-color: #fff;
+  /* Map */
+  --map-button-bg: #000;
+  --map-button-border: 2px solid #fff;
+  --map-button-color: #fff;
+  --map-button-hover-bg: #fff;
+  --map-button-hover-color: #000;
+  /* Search */
+  --search-bg: #000;
+  --search-border: 2px solid #fff;
+  --search-color: #fff;
+  --search-result-hover-bg: #333;
+  --search-result-hover-color: #ff0;
+  /* Layer tree */
+  --layertree-bg: #000;
+  --layertree-color: #fff;
+  --layertree-active-bg: #333;
+  /* Scrollbar */
+  --scrollbar-thumb-bg: #fff;
+  --scrollbar-track-bg: #000;
+}
+
+/* === Dark Theme === */
+:root[data-theme="dark"] {
+  /* General */
+  --panelbar-bg: #1e1e2e;
+  --panelbar-border: 1px solid #313244;
+  --panelbar-color: #cdd6f4;
+  --window-bg: #1e1e2e;
+  --window-border: 1px solid #313244;
+  --window-color: #cdd6f4;
+  --input-bg: #313244;
+  --input-border: 1px solid #45475a;
+  --input-color: #cdd6f4;
+  --input-focus-border: 1px solid #89b4fa;
+  --button-bg: #313244;
+  --button-border: 1px solid #45475a;
+  --button-color: #cdd6f4;
+  --button-hover-bg: #45475a;
+  --button-hover-color: #cdd6f4;
+  --button-active-bg: #89b4fa;
+  --button-active-color: #1e1e2e;
+  /* Title bar */
+  --titlebar-bg: #181825;
+  --titlebar-color: #cdd6f4;
+  --titlebar-border: 1px solid #313244;
+  /* Toolbar */
+  --toolbar-bg: #1e1e2e;
+  --toolbar-border: 1px solid #313244;
+  --toolbar-color: #cdd6f4;
+  /* Map */
+  --map-button-bg: #1e1e2ecc;
+  --map-button-border: 1px solid #313244;
+  --map-button-color: #cdd6f4;
+  --map-button-hover-bg: #313244;
+  --map-button-hover-color: #cdd6f4;
+  /* Search */
+  --search-bg: #1e1e2e;
+  --search-border: 1px solid #313244;
+  --search-color: #cdd6f4;
+  --search-result-hover-bg: #313244;
+  --search-result-hover-color: #89b4fa;
+  /* Layer tree */
+  --layertree-bg: #1e1e2e;
+  --layertree-color: #cdd6f4;
+  --layertree-active-bg: #313244;
+  /* Scrollbar */
+  --scrollbar-thumb-bg: #45475a;
+  --scrollbar-track-bg: #1e1e2e;
+}

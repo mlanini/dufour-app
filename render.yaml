@@ -51,7 +51,7 @@ services:
     healthCheckPath: /
     autoDeploy: true
 
-  # Frontend Web Service (Vite + React)
+  # Frontend Web Service (QWC2 + Webpack)
   - type: web
     name: dufour-app
     runtime: docker
@@ -60,19 +60,17 @@ services:
     branch: main
     region: frankfurt
     plan: free
-    buildCommand: echo "Building web app with Vite..."
     envVars:
       - key: NODE_ENV
         value: production
-      - key: VITE_API_URL
-        value: https://dufour-api.onrender.com
     healthCheckPath: /
     autoDeploy: true
 
 # Architecture Notes:
-# - Backend API + QGIS Server embedded in single container (Port 3000 + 8080)
+# - Backend API + QGIS Server embedded in single container (Port 10000 + 8080)
 # - QGIS projects stored in PostgreSQL BYTEA column (max 50MB per project)
-# - Frontend served via Nginx (static files)
+# - Frontend: QWC2 (QGIS Web Client 2) built with Webpack, served via Nginx
+# - /themes.json proxied from nginx to backend (dynamic theme generation)
 # - Database: PostgreSQL 16 + PostGIS at alwaysdata.net
 # - Cold start time: ~30s for backend (acceptable for free tier)
 

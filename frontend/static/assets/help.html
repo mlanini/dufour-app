@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <title>Dufour-app – Help</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, "Helvetica Neue", Arial, sans-serif;
+      max-width: 800px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+      line-height: 1.6;
+      color: #333;
+    }
+    h1 { color: #2a2e32; border-bottom: 2px solid #3070b3; padding-bottom: 0.5rem; }
+    h2 { color: #3070b3; margin-top: 2rem; }
+    h3 { color: #555; }
+    code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; font-size: 0.9em; }
+    table { border-collapse: collapse; width: 100%; margin: 1rem 0; }
+    th, td { border: 1px solid #ddd; padding: 8px 12px; text-align: left; }
+    th { background: #3070b3; color: white; }
+    tr:nth-child(even) { background: #f9f9f9; }
+    .shortcut { font-weight: bold; }
+    a { color: #3070b3; }
+  </style>
+</head>
+<body>
+  <h1>🗺️ Dufour-app – Military Web GIS</h1>
+  <p>
+    <strong>Dufour-app</strong> is a web-based GIS platform for military mapping,
+    built on <a href="https://github.com/qgis/qwc2" target="_blank">QGIS Web Client 2 (QWC2)</a>.
+    Upload your QGIS projects and visualize them directly in the browser.
+  </p>
+
+  <h2>Getting Started</h2>
+  <ol>
+    <li>Use the <strong>Theme Switcher</strong> (menu → Themes) to select a map project.</li>
+    <li>Navigate the map using mouse drag, scroll to zoom, or use the zoom buttons.</li>
+    <li>Click on features to identify them, or use the region-identify tool.</li>
+    <li>Use the <strong>Layer Tree</strong> (menu → Layers) to toggle layer visibility.</li>
+  </ol>
+
+  <h2>Key Features</h2>
+  <table>
+    <thead>
+      <tr><th>Feature</th><th>Description</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>Theme Switcher</td><td>Switch between uploaded QGIS projects</td></tr>
+      <tr><td>Layer Tree</td><td>Manage layer visibility, opacity, and order</td></tr>
+      <tr><td>Identify</td><td>Click or draw a region to query features</td></tr>
+      <tr><td>Measure</td><td>Measure distances, areas, and bearings</td></tr>
+      <tr><td>Redlining</td><td>Draw annotations directly on the map</td></tr>
+      <tr><td>Print</td><td>Export the current map view as PDF</td></tr>
+      <tr><td>Map Export</td><td>Export the current view as a raster image</td></tr>
+      <tr><td>Search</td><td>Search for places via SwissTopo GeoAdmin</td></tr>
+      <tr><td>Background Maps</td><td>ArcGIS Imagery, ArcGIS Topo, SwissTopo, OpenStreetMap</td></tr>
+      <tr><td>Coordinate Display</td><td>Mouse coordinates in the bottom bar</td></tr>
+      <tr><td>Geometry Digitizer</td><td>Digitize points, lines, and polygons</td></tr>
+      <tr><td>Attribute Table</td><td>View and filter layer attribute data</td></tr>
+      <tr><td>Height Profile</td><td>Show elevation profiles along drawn lines</td></tr>
+      <tr><td>Share</td><td>Share map views via permalink or QR code</td></tr>
+      <tr><td>Bookmarks</td><td>Save and recall map extents</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Keyboard Shortcuts</h2>
+  <table>
+    <thead>
+      <tr><th>Shortcut</th><th>Action</th></tr>
+    </thead>
+    <tbody>
+      <tr><td class="shortcut">+</td><td>Zoom In</td></tr>
+      <tr><td class="shortcut">−</td><td>Zoom Out</td></tr>
+      <tr><td class="shortcut">Shift + Drag</td><td>Zoom to extent</td></tr>
+      <tr><td class="shortcut">Ctrl + C</td><td>Copy coordinates</td></tr>
+    </tbody>
+  </table>
+
+  <h2>Uploading Projects</h2>
+  <p>
+    Use the REST API to upload QGIS project files (<code>.qgs</code> / <code>.qgz</code>):
+  </p>
+  <pre><code>POST /api/v1/projects
+Content-Type: multipart/form-data
+Body: file=&lt;your_project.qgz&gt;</code></pre>
+  <p>After upload, the project will appear in the Theme Switcher.</p>
+
+  <h2>Support</h2>
+  <p>
+    For issues and feature requests, visit the
+    <a href="https://github.com/qgis/qwc2-demo-app/issues" target="_blank">project repository</a>.
+  </p>
+</body>
+</html>

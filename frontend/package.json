@@ -1,47 +1,31 @@
 {
-  "name": "dufour-app",
-  "version": "0.1.0",
-  "description": "Web GIS application based on QWC2 and inspired by KADAS Albireo",
-  "private": true,
-  "type": "module",
+  "name": "dufour-app-qwc2",
+  "version": "1.0.0",
+  "description": "Dufour-app QWC2 Web GIS Client for QGIS Project Management",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "preview": "vite preview",
-    "lint": "eslint . --ext .js,.jsx --report-unused-disable-directives --max-warnings 0",
-    "test": "playwright test",
-    "test:ui": "playwright test --ui",
-    "test:debug": "playwright test --debug"
+    "start": "webpack serve --mode development --env ANALYZE=0",
+    "build": "webpack --mode production --env ANALYZE=0",
+    "analyze": "webpack --mode production --env ANALYZE=1"
   },
   "dependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-redux": "^9.1.0",
-    "redux": "^5.0.1",
-    "@reduxjs/toolkit": "^2.2.0",
-    "ol": "^9.1.0",
-    "proj4": "^2.11.0",
-    "axios": "^1.6.7",
-    "classnames": "^2.5.1",
-    "uuid": "^9.0.1",
-    "file-saver": "^2.0.5",
-    "jszip": "^3.10.1",
-    "xml2js": "^0.6.2",
-    "milsymbol": "^2.2.0"
+    "qwc2": "latest",
+    "path-browserify": "^1.0.1"
   },
   "devDependencies": {
-    "@types/react": "^18.2.56",
-    "@types/react-dom": "^18.2.19",
-    "@vitejs/plugin-react": "^4.2.1",
-    "vite": "^5.1.4",
-    "eslint": "^8.56.0",
-    "eslint-plugin-react": "^7.33.2",
-    "eslint-plugin-react-hooks": "^4.6.0",
-    "eslint-plugin-react-refresh": "^0.4.5",
-    "@playwright/test": "^1.42.0"
-  },
-  "engines": {
-    "node": ">=18.0.0",
-    "npm": ">=9.0.0"
+    "@babel/core": "^7.26.0",
+    "@babel/preset-env": "^7.26.0",
+    "@babel/preset-react": "^7.26.3",
+    "@babel/plugin-transform-class-properties": "^7.25.9",
+    "@babel/plugin-transform-object-rest-spread": "^7.25.9",
+    "babel-loader": "^9.2.1",
+    "css-loader": "^7.1.2",
+    "style-loader": "^4.0.0",
+    "source-map-loader": "^5.0.0",
+    "copy-webpack-plugin": "^12.0.2",
+    "html-webpack-plugin": "^5.6.3",
+    "webpack": "^5.97.1",
+    "webpack-cli": "^6.0.1",
+    "webpack-dev-server": "^5.2.0",
+    "webpack-bundle-analyzer": "^4.10.2"
   }
 }
