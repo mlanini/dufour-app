@@ -1367,7 +1367,7 @@ async def compose_print_with_symbols(request: dict):
 
 # ==================== WMS PROXY ENDPOINTS ====================
 
-@app.get("/api/projects/{project_name}/wms", tags=["wms"])
+@app.api_route("/api/projects/{project_name}/wms", methods=["GET", "POST"], tags=["wms"])
 async def wms_proxy(project_name: str, request: Request):
     """
     # OGC WMS Proxy
@@ -1480,8 +1480,21 @@ async def wms_proxy(project_name: str, request: Request):
         query_params = dict(request.query_params)
         query_params['MAP'] = str(temp_path)
         
+        # Handle both GET and POST (QWC2 uses POST for GetMap/GetFeatureInfo)
         async with httpx.AsyncClient(timeout=30.0) as client:
-            response = await client.get(qgis_server_url, params=query_params)
+            if request.method == "POST":
+                # POST: merge form body params into query params
+                body = await request.body()
+                # QGIS Server expects GET with query params even for POST data
+                # Parse form-encoded body and merge
+                from urllib.parse import parse_qs
+                post_params = parse_qs(body.decode("utf-8", errors="replace"))
+                for key, values in post_params.items():
+                    if key not in query_params:
+                        query_params[key] = values[0]
+                response = await client.get(qgis_server_url, params=query_params)
+            else:
+                response = await client.get(qgis_server_url, params=query_params)
             
             # Return QGIS Server response with correct Content-Type
             return Response(
