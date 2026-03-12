@@ -3,9 +3,10 @@
   "version": "1.0.0",
   "description": "Dufour-app QWC2 Web GIS Client for QGIS Project Management",
   "scripts": {
-    "start": "webpack serve --mode development --env ANALYZE=0",
-    "build": "webpack --mode production --env ANALYZE=0",
-    "analyze": "webpack --mode production --env ANALYZE=1"
+    "makeicons": "node node_modules/qwc2/scripts/makeIconkit.js",
+    "start": "npm run makeicons && webpack serve --mode development --env ANALYZE=0",
+    "build": "npm run makeicons && webpack --mode production --env ANALYZE=0",
+    "analyze": "npm run makeicons && webpack --mode production --env ANALYZE=1"
   },
   "dependencies": {
     "qwc2": "latest",
@@ -17,15 +18,18 @@
     "@babel/preset-react": "^7.26.3",
     "@babel/plugin-transform-class-properties": "^7.25.9",
     "@babel/plugin-transform-object-rest-spread": "^7.25.9",
+    "@furkot/webfonts-generator": "^2.0.4",
     "babel-loader": "^9.2.1",
     "css-loader": "^7.1.2",
-    "style-loader": "^4.0.0",
-    "source-map-loader": "^5.0.0",
     "copy-webpack-plugin": "^12.0.2",
+    "glob": "^10.3.10",
     "html-webpack-plugin": "^5.6.3",
+    "mkdirp": "^3.0.1",
+    "source-map-loader": "^5.0.0",
+    "style-loader": "^4.0.0",
     "webpack": "^5.97.1",
+    "webpack-bundle-analyzer": "^4.10.2",
     "webpack-cli": "^6.0.1",
-    "webpack-dev-server": "^5.2.0",
-    "webpack-bundle-analyzer": "^4.10.2"
+    "webpack-dev-server": "^5.2.0"
   }
 }

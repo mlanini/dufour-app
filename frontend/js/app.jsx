@@ -7,6 +7,7 @@ import React from 'react';
 import {createRoot} from 'react-dom/client';
 import StandardApp from 'qwc2/components/StandardApp';
 import appConfig from './appConfig';
+import '../icons/build/qwc2-icons.css';
 
 const container = document.getElementById('container');
 const root = createRoot(container);
