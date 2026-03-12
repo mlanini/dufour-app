@@ -40,7 +40,7 @@
     "textFont": "11pt sans-serif"
   },
   "importLayerUrlPresets": [
-    {"label": "SwissTopo WMS", "value": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetCapabilities"},
+    {"label": "swisstopo WMS", "value": "https://wms.geo.admin.ch/?SERVICE=WMS&REQUEST=GetCapabilities"},
     {"label": "OpenStreetMap WMS", "value": "https://ows.terrestris.de/osm/service?SERVICE=WMS&REQUEST=GetCapabilities"}
   ],
   "projections": [
@@ -48,7 +48,8 @@
     {"code": "EPSG:4326", "proj": "+proj=longlat +datum=WGS84 +no_defs", "label": "WGS 84"},
     {"code": "EPSG:2056", "proj": "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs", "label": "CH1903+ / LV95"},
     {"code": "EPSG:21781", "proj": "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs", "label": "CH1903 / LV03"},
-    {"code": "EPSG:32632", "proj": "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs", "label": "WGS 84 / UTM zone 32N"}
+    {"code": "EPSG:32632", "proj": "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs", "label": "WGS 84 / UTM zone 32N"},
+    {"code": "MGRS", "proj": "+proj=longlat +datum=WGS84 +no_defs", "label": "MGRS"}
   ],
   "plugins": {
     "common": [
@@ -120,7 +121,7 @@
             {"key": "Print", "icon": "print"},
             {"key": "MapExport", "icon": "rasterexport"},
             {"key": "Help", "icon": "info"},
-            {"key": "ExternalLink", "icon": "link", "url": "https://github.com/qgis/qwc2-demo-app"}
+            {"key": "ExternalLink", "icon": "link", "url": "https://github.com/mlanini/dufour-app"}
           ],
           "toolbarItems": [
             {"key": "Measure", "mode": "LineString", "icon": "measure_line"},

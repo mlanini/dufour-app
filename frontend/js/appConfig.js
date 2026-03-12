@@ -7,6 +7,8 @@
 
 import {lazy} from 'react';
 
+import {forward as mgrsForward} from 'mgrs';
+
 import AppMenu from 'qwc2/components/AppMenu';
 import FullscreenSwitcher from 'qwc2/components/FullscreenSwitcher';
 import SearchBox from 'qwc2/components/SearchBox';
@@ -65,6 +67,32 @@ import BufferSupport from 'qwc2/plugins/redlining/RedliningBufferSupport';
 
 import defaultLocaleData from '../static/translations/en-US.json';
 import {customAttributeCalculator, attributeTransform, customExporters} from './IdentifyExtensions';
+
+import CoordinatesUtils from 'qwc2/utils/CoordinatesUtils';
+import LocaleUtils from 'qwc2/utils/LocaleUtils';
+
+/**
+ * Custom coordinate formatter for the BottomBar.
+ * When displayCrs is "MGRS", converts WGS84 lon/lat to MGRS string.
+ * For all other CRS, reproduces the default QWC2 formatting so that
+ * the coordinateFormatter prop does not swallow the standard display.
+ */
+function coordinateFormatter(coordinate, crs) {
+    if (crs === "MGRS") {
+        try {
+            // coordinate is already [lon, lat] in WGS84 (MGRS pseudo-CRS = EPSG:4326)
+            return mgrsForward([coordinate[0], coordinate[1]], 5);
+        } catch (e) {
+            return "—";
+        }
+    }
+    // Default formatting for other CRS (same logic as CoordinateDisplayer)
+    if (!isNaN(coordinate[0]) && !isNaN(coordinate[1])) {
+        const decimals = CoordinatesUtils.getPrecision(crs);
+        return LocaleUtils.toLocaleFixed(coordinate[0], decimals) + " " + LocaleUtils.toLocaleFixed(coordinate[1], decimals);
+    }
+    return "";
+}
 
 export default {
     defaultLocaleData: defaultLocaleData,
@@ -133,6 +161,9 @@ export default {
             ZoomOutPlugin: ZoomOutPlugin
         },
         cfg: {
+            BottomBarPlugin: {
+                coordinateFormatter: coordinateFormatter
+            },
             IdentifyPlugin: {
                 attributeCalculator: customAttributeCalculator,
                 attributeTransform: attributeTransform,

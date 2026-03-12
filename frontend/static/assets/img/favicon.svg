@@ -1,6 +1,19 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
-  <rect width="32" height="32" rx="4" fill="#2d5f2d"/>
-  <path d="M16 4 L28 28 L4 28 Z" fill="none" stroke="#c8dfc8" stroke-width="2" stroke-linejoin="round"/>
-  <circle cx="16" cy="18" r="3" fill="#f0c040"/>
-  <line x1="16" y1="8" x2="16" y2="15" stroke="#f0c040" stroke-width="1.5"/>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#34495e"/>
+      <stop offset="100%" stop-color="#2c3e50"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="32" height="32" rx="6" fill="url(#bg)"/>
+  <!-- Compass icon (scaled from logo-mobile) -->
+  <g transform="translate(16,16)">
+    <circle cx="0" cy="0" r="10" fill="none" stroke="#5dade2" stroke-width="1.5"/>
+    <polygon points="0,-8.5 2.2,-3 0,-4.5 -2.2,-3" fill="#5dade2"/>
+    <polygon points="0,8.5 2.2,3 0,4.5 -2.2,3" fill="rgba(93,173,226,0.4)"/>
+    <line x1="-8.5" y1="0" x2="-3.5" y2="0" stroke="#5dade2" stroke-width="1"/>
+    <line x1="3.5" y1="0" x2="8.5" y2="0" stroke="#5dade2" stroke-width="1"/>
+    <circle cx="0" cy="0" r="1.5" fill="#5dade2"/>
+  </g>
 </svg>
