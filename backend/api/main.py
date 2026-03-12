@@ -81,14 +81,14 @@ Currently public API. Future versions will implement JWT authentication.
 
 ## Support
 
-- Documentation: https://github.com/yourusername/dufour-app
-- Issues: https://github.com/yourusername/dufour-app/issues
+- Documentation: https://github.com/mlanini/dufour-app
+- Issues: https://github.com/mlanini/dufour-app/issues
 """,
     version="1.0.0",
     contact={
-        "name": "Dufour-App Team",
-        "url": "https://github.com/yourusername/dufour-app",
-        "email": "support@dufour-app.ch"
+        "name": "Michael Lanini",
+        "url": "https://github.com/mlanini/dufour-app",
+        "email": "mlanini@proton.me"
     },
     license_info={
         "name": "MIT License",
@@ -529,7 +529,7 @@ async def publish_project(
     
     ### Example:
     ```bash
-    curl -X POST "https://api.dufour-app.ch/api/projects/publish" \\
+    curl -X POST "https://dufour-api.onrender.com/api/projects/publish" \\
       -F "name=my_map" \\
       -F "title=My Map" \\
       -F "file=@project.qgz"
@@ -805,7 +805,7 @@ async def list_themes():
           "id": "swiss_municipalities",
           "title": "Swiss Municipalities",
           "thumbnail": "thumb.png",
-          "wms_url": "https://api.dufour-app.ch/api/projects/swiss_municipalities/wms"
+          "wms_url": "https://dufour-api.onrender.com/api/projects/swiss_municipalities/wms"
         }
       ]
     }
@@ -847,7 +847,7 @@ async def get_theme_config(theme_name: str):
     {
       "id": "swiss_municipalities",
       "title": "Swiss Municipalities",
-      "wms_url": "https://api.dufour-app.ch/api/projects/swiss_municipalities/wms",
+      "wms_url": "https://dufour-api.onrender.com/api/projects/swiss_municipalities/wms",
       "extent": [2485000, 1075000, 2834000, 1295000],
       "crs": "EPSG:2056",
       "layers": [
@@ -1441,7 +1441,7 @@ async def wms_proxy(project_name: str, request: Request):
     
     const layer = new TileLayer({
       source: new TileWMS({
-        url: 'https://api.dufour-app.ch/api/projects/my_project/wms',
+        url: 'https://dufour-api.onrender.com/api/projects/my_project/wms',
         params: {
           'LAYERS': 'municipalities',
           'TILED': true

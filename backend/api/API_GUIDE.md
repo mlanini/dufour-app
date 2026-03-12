@@ -671,7 +671,7 @@ SYMBOL_CACHE_SIZE=512
 
 ```bash
 # Clone repository
-git clone https://github.com/yourusername/dufour-app.git
+git clone https://github.com/mlanini/dufour-app.git
 cd dufour-app/backend/api
 
 # Create virtual environment
@@ -716,8 +716,8 @@ MIT License - see [LICENSE](../../LICENSE) file for details.
 
 ## 🆘 Support
 
-- **Documentation:** https://github.com/yourusername/dufour-app
-- **Issues:** https://github.com/yourusername/dufour-app/issues
+- **Documentation:** https://github.com/mlanini/dufour-app
+- **Issues:** https://github.com/mlanini/dufour-app/issues
 - **Email:** support@dufour-app.ch
 
 ---
