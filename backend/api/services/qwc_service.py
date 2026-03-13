@@ -5,12 +5,15 @@ Provides integration between QGIS Server and QWC2 frontend
 """
 import os
 import json
+import logging
 from pathlib import Path
 from typing import List, Dict, Any, Optional
 import xml.etree.ElementTree as ET
 import aiofiles
 
 from models.schemas import ThemeConfig
+
+logger = logging.getLogger(__name__)
 
 
 class QWCService:
@@ -114,7 +117,7 @@ class QWCService:
 
     async def generate_full_themes_json(self, api_base_url: str = "") -> Dict[str, Any]:
         """
-        Generate full QWC2-compatible themes.json from all stored theme configs.
+        Generate full QWC2-compatible themes.json from projects stored in PostgreSQL.
         This is what QWC2 StandardApp expects at /themes.json.
 
         Args:
@@ -123,65 +126,93 @@ class QWCService:
         """
         items = []
 
-        for theme_file in sorted(self.themes_dir.glob('*.json')):
+        # Read projects from PostgreSQL database
+        try:
+            from services.qgis_storage_service import storage_service
+            db_projects = storage_service.list_projects()
+        except Exception as e:
+            logger.error(f"Failed to read projects from database: {e}")
+            db_projects = []
+
+        for project in db_projects:
             try:
-                async with aiofiles.open(theme_file, 'r') as f:
-                    content = await f.read()
-                    config = json.loads(content)
+                project_name = project['name']
+                extent = project.get('extent') or [-180, -85, 180, 85]
+                map_crs = project.get('crs') or 'EPSG:3857'
 
-                project_name = theme_file.stem
-                extent = config.get('extent', [664577, 5753148, 1167741, 6075303])
-                map_crs = config.get('mapCrs', 'EPSG:3857')
-                scales = config.get('scales', self._default_scales())
-                theme_layers = config.get('themeLayers', [])
-
-                # Build QWC2-compatible WMS URL (relative, goes through nginx proxy)
+                # Build QWC2-compatible WMS URL
                 wms_url = f"{api_base_url}/api/projects/{project_name}/wms"
-
-                # Build sublayers from themeLayers
-                sublayers = []
-                for lyr in theme_layers:
-                    sublayers.append({
-                        "name": lyr.get('name', ''),
-                        "title": lyr.get('title', lyr.get('name', '')),
-                        "visibility": lyr.get('visibility', True),
-                        "queryable": lyr.get('queryable', True),
-                        "displayField": lyr.get('displayField', ''),
-                        "opacity": lyr.get('opacity', 255),
-                        "bbox": lyr.get('bbox', {
-                            "crs": map_crs,
-                            "bounds": extent
-                        })
-                    })
 
                 item = {
                     "id": project_name,
                     "name": project_name,
-                    "title": config.get('title', project_name),
-                    "description": config.get('abstract', ''),
+                    "title": project.get('title') or project_name,
+                    "description": project.get('description') or '',
                     "url": wms_url,
-                    "attribution": config.get('attribution', 'Dufour-app'),
-                    "mapCrs": map_crs,
+                    "attribution": "Dufour.app",
+                    "mapCrs": "EPSG:3857",
                     "bbox": {
-                        "crs": map_crs,
-                        "bounds": extent
+                        "crs": "EPSG:4326",
+                        "bounds": [-180, -85, 180, 85]
                     },
                     "initialBbox": {
                         "crs": map_crs,
                         "bounds": extent
                     },
-                    "scales": scales,
-                    "printScales": config.get('printScales', scales),
-                    "printResolutions": config.get('printResolutions', [150, 300]),
-                    "searchProviders": config.get('searchProviders', ["coordinates"]),
+                    "scales": self._default_scales_full(),
+                    "printScales": self._default_scales(),
+                    "printResolutions": [150, 300, 600],
+                    "searchProviders": ["coordinates", "geoadmin"],
                     "backgroundLayers": [
                         {"name": "arcgis_world_imagery"},
                         {"name": "arcgis_world_topo"},
                         {"name": "swisstopo_national"},
                         {"name": "osm"}
                     ],
-                    "sublayers": sublayers,
-                    "thumbnail": f"{project_name}.jpg"
+                    "sublayers": [],
+                    "thumbnail": "img/mapthumbs/default.jpg",
+                    "additionalMouseCrs": ["EPSG:2056", "EPSG:4326", "EPSG:21781", "MGRS"]
+                }
+                items.append(item)
+            except Exception as e:
+                logger.warning(f"Failed to build theme for project {project.get('name')}: {e}")
+                continue
+
+        # Also check for theme JSON files on filesystem (legacy)
+        for theme_file in sorted(self.themes_dir.glob('*.json')):
+            try:
+                theme_name = theme_file.stem
+                # Skip if already loaded from DB
+                if any(i['id'] == theme_name for i in items):
+                    continue
+                async with aiofiles.open(theme_file, 'r') as f:
+                    content = await f.read()
+                    config = json.loads(content)
+                extent = config.get('extent', [-180, -85, 180, 85])
+                map_crs = config.get('mapCrs', 'EPSG:3857')
+                wms_url = f"{api_base_url}/api/projects/{theme_name}/wms"
+                item = {
+                    "id": theme_name,
+                    "name": theme_name,
+                    "title": config.get('title', theme_name),
+                    "description": config.get('abstract', ''),
+                    "url": wms_url,
+                    "attribution": config.get('attribution', 'Dufour.app'),
+                    "mapCrs": "EPSG:3857",
+                    "bbox": {"crs": "EPSG:4326", "bounds": [-180, -85, 180, 85]},
+                    "initialBbox": {"crs": map_crs, "bounds": extent},
+                    "scales": self._default_scales_full(),
+                    "printScales": self._default_scales(),
+                    "printResolutions": [150, 300, 600],
+                    "searchProviders": ["coordinates", "geoadmin"],
+                    "backgroundLayers": [
+                        {"name": "arcgis_world_imagery"},
+                        {"name": "arcgis_world_topo"},
+                        {"name": "swisstopo_national"},
+                        {"name": "osm"}
+                    ],
+                    "sublayers": [],
+                    "thumbnail": "img/mapthumbs/default.jpg"
                 }
                 items.append(item)
             except Exception:
@@ -192,16 +223,16 @@ class QWCService:
             items.append({
                 "id": "dufour_default",
                 "name": "dufour_default",
-                "title": "Dufour Default",
+                "title": "Dufour World",
                 "description": "Upload QGIS projects to add themes",
                 "url": f"{api_base_url}/api/projects/dufour_default/wms",
-                "attribution": "Dufour-app",
+                "attribution": "Dufour.app",
                 "mapCrs": "EPSG:3857",
                 "bbox": {"crs": "EPSG:4326", "bounds": [-180, -85, 180, 85]},
                 "initialBbox": {"crs": "EPSG:4326", "bounds": [5.95, 45.82, 10.49, 47.81]},
-                "scales": self._default_scales(),
+                "scales": self._default_scales_full(),
                 "printScales": self._default_scales(),
-                "printResolutions": [150, 300],
+                "printResolutions": [150, 300, 600],
                 "searchProviders": ["coordinates", "geoadmin"],
                 "backgroundLayers": [
                     {"name": "arcgis_world_imagery"},
@@ -210,7 +241,8 @@ class QWCService:
                     {"name": "osm"}
                 ],
                 "sublayers": [],
-                "thumbnail": "default.jpg"
+                "thumbnail": "img/mapthumbs/default.jpg",
+                "additionalMouseCrs": ["EPSG:2056", "EPSG:4326", "EPSG:21781", "MGRS"]
             })
 
         default_theme = items[0]["id"] if items else "dufour_default"
@@ -224,7 +256,7 @@ class QWCService:
                 "externalLayers": [],
                 "themeInfoLinks": [],
                 "defaultMapCrs": "EPSG:3857",
-                "defaultScales": self._default_scales(),
+                "defaultScales": self._default_scales_full(),
                 "defaultPrintScales": self._default_scales(),
                 "defaultPrintResolutions": [150, 300, 600],
                 "defaultSearchProviders": ["coordinates", "geoadmin"],
@@ -241,6 +273,13 @@ class QWCService:
 
     def _default_scales(self) -> List[int]:
         return [1000000, 500000, 250000, 100000, 50000, 25000,
+                10000, 5000, 2500, 1000, 500, 250]
+
+    def _default_scales_full(self) -> List[int]:
+        """Full scale range including global zoom levels"""
+        return [2000000000, 1000000000, 500000000, 250000000, 100000000,
+                50000000, 25000000, 10000000, 5000000, 2500000,
+                1000000, 500000, 250000, 100000, 50000, 25000,
                 10000, 5000, 2500, 1000, 500, 250]
 
     def _get_qwc2_background_layers(self) -> List[Dict[str, Any]]:
