@@ -18,8 +18,8 @@ RUN npm run build
 # Production stage with Nginx
 FROM nginx:alpine
 
-# Copy custom nginx config (for Render.com - no upstream proxy)
-COPY nginx/nginx-render.conf /etc/nginx/nginx.conf
+# Copy custom nginx config template (with $PORT placeholder for Render.com)
+COPY nginx/nginx-render.conf /etc/nginx/templates/nginx.conf.template
 
 # Copy built frontend from builder stage (Webpack outputs to prod/)
 COPY --from=builder /app/prod /usr/share/nginx/html
@@ -31,12 +31,15 @@ RUN mkdir -p /var/cache/nginx && \
 
 # Add health check script
 RUN echo '#!/bin/sh' > /healthcheck.sh && \
-    echo 'wget -q --spider http://localhost/ || exit 1' >> /healthcheck.sh && \
+    echo 'wget -q --spider http://localhost:${PORT:-10000}/ || exit 1' >> /healthcheck.sh && \
     chmod +x /healthcheck.sh
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
     CMD /healthcheck.sh
 
-EXPOSE 80
+# Render.com sets PORT env var (default 10000)
+ENV PORT=10000
+EXPOSE ${PORT}
 
-CMD ["nginx", "-g", "daemon off;"]
+# Use envsubst to resolve $PORT in nginx config, then start nginx
+CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"]
