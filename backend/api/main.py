@@ -398,14 +398,27 @@ async def upload_and_migrate_project(
             insert_sql = text("""
                 INSERT INTO projects (
                     id, user_id, name, title, description, is_public,
-                    qgz_data, qgz_size, crs, extent, created_at, updated_at
+                    qgz_data, qgz_size, crs,
+                    extent_minx, extent_miny, extent_maxx, extent_maxy,
+                    created_at, updated_at
                 )
                 VALUES (
                     :id, :user_id, :name, :title, :description, :is_public,
-                    :qgz_data, :qgz_size, :crs, 
-                    ST_MakeEnvelope(:xmin, :ymin, :xmax, :ymax, :srid),
+                    :qgz_data, :qgz_size, :crs,
+                    :minx, :miny, :maxx, :maxy,
                     :created_at, :updated_at
                 )
+                ON CONFLICT (name) DO UPDATE SET
+                    title = EXCLUDED.title,
+                    description = EXCLUDED.description,
+                    qgz_data = EXCLUDED.qgz_data,
+                    qgz_size = EXCLUDED.qgz_size,
+                    crs = EXCLUDED.crs,
+                    extent_minx = EXCLUDED.extent_minx,
+                    extent_miny = EXCLUDED.extent_miny,
+                    extent_maxx = EXCLUDED.extent_maxx,
+                    extent_maxy = EXCLUDED.extent_maxy,
+                    updated_at = EXCLUDED.updated_at
             """)
             
             with db.get_engine().connect() as conn:
@@ -419,11 +432,10 @@ async def upload_and_migrate_project(
                     'qgz_data': modified_qgz_bytes,
                     'qgz_size': len(modified_qgz_bytes),
                     'crs': project_info.crs,
-                    'xmin': project_info.extent[0],
-                    'ymin': project_info.extent[1],
-                    'xmax': project_info.extent[2],
-                    'ymax': project_info.extent[3],
-                    'srid': 2056,
+                    'minx': project_info.extent[0],
+                    'miny': project_info.extent[1],
+                    'maxx': project_info.extent[2],
+                    'maxy': project_info.extent[3],
                     'created_at': datetime.utcnow(),
                     'updated_at': datetime.utcnow()
                 })

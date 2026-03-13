@@ -1,5 +1,5 @@
 /**
- * Dufour-app Identify Extensions
+ * Dufour.app Identify Extensions
  * Custom attribute handlers for the Identify dialog
  */
 

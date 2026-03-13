@@ -1,5 +1,5 @@
 /**
- * Dufour-app QWC2 Application Configuration
+ * Dufour.app QWC2 Application Configuration
  * All plugins registered for comprehensive Web GIS functionality
  */
 

@@ -354,8 +354,8 @@ http --form POST https://api.intelligeo.net/api/projects \
 ### Projects Table
 ```sql
 CREATE TABLE projects (
-    id UUID PRIMARY KEY,
-    user_id UUID,
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id),
     name VARCHAR(255) UNIQUE NOT NULL,
     title VARCHAR(500),
     description TEXT,
@@ -363,7 +363,10 @@ CREATE TABLE projects (
     qgz_data BYTEA,
     qgz_size INTEGER,
     crs VARCHAR(50),
-    extent GEOMETRY(Polygon, 2056),
+    extent_minx DOUBLE PRECISION,
+    extent_miny DOUBLE PRECISION,
+    extent_maxx DOUBLE PRECISION,
+    extent_maxy DOUBLE PRECISION,
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW()
 );
