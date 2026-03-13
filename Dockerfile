@@ -18,8 +18,16 @@ RUN npm run build
 # Production stage with Nginx
 FROM nginx:alpine
 
+# Remove default nginx config to avoid conflicts
+RUN rm -f /etc/nginx/conf.d/default.conf
+
 # Copy custom nginx config template (with $PORT placeholder for Render.com)
-COPY nginx/nginx-render.conf /etc/nginx/templates/nginx.conf.template
+# Stored outside /etc/nginx/templates/ to prevent nginx's built-in envsubst from processing it
+COPY nginx/nginx-render.conf /etc/nginx/nginx.conf.template
+
+# Copy entrypoint script (handles envsubst for $PORT only, preserving nginx variables)
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Copy built frontend from builder stage (Webpack outputs to prod/)
 COPY --from=builder /app/prod /usr/share/nginx/html
@@ -41,5 +49,5 @@ HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
 ENV PORT=10000
 EXPOSE ${PORT}
 
-# Use envsubst to resolve $PORT in nginx config, then start nginx
-CMD ["/bin/sh", "-c", "envsubst '${PORT}' < /etc/nginx/templates/nginx.conf.template > /etc/nginx/nginx.conf && nginx -g 'daemon off;'"]
+# Use entrypoint script to correctly envsubst only $PORT and start nginx
+ENTRYPOINT ["/docker-entrypoint.sh"]
