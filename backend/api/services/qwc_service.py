@@ -118,7 +118,7 @@ class QWCService:
         This is what QWC2 StandardApp expects at /themes.json.
 
         Args:
-            api_base_url: Base URL for WMS proxy (e.g. https://dufour-api.onrender.com).
+            api_base_url: Base URL for WMS proxy (e.g. https://api.intelligeo.net).
                           If empty, uses relative paths.
         """
         items = []

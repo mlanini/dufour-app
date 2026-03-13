@@ -45,13 +45,13 @@ module.exports = (env, argv) => {
             proxy: [
                 {
                     context: ['/api'],
-                    target: 'https://dufour-api.onrender.com',
+                    target: 'https://api.intelligeo.net',
                     changeOrigin: true,
                     secure: false
                 },
                 {
                     context: ['/themes.json'],
-                    target: 'https://dufour-api.onrender.com',
+                    target: 'https://api.intelligeo.net',
                     changeOrigin: true,
                     secure: false
                 }

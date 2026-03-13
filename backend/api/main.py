@@ -36,29 +36,29 @@ Content management system for QGIS projects and PostGIS data in Dufour-app.
 
 ## Features
 
-### 📁 Project Management
+### Project Management
 - Upload and publish QGIS projects (.qgs, .qgz)
 - Automatic layer migration from local files to PostGIS
 - Project metadata and versioning
 - WMS service integration
 
-### 🗄️ Data Management
+### Data Management
 - PostGIS table creation and management
 - Bulk feature upload (GeoJSON, Shapefile, etc.)
 - Spatial data validation
 - Schema introspection
 
-### 🌐 WMS Proxy
+### WMS Proxy
 - On-demand QGIS Server integration
 - Cached project retrieval from PostgreSQL
 - GetCapabilities, GetMap, GetFeatureInfo support
 
-### 🎨 QWC2 Integration
+### QWC2 Integration
 - Theme configuration generation
 - Layer tree and capabilities export
 - Frontend compatibility layer
 
-### 🎖️ Military Symbols (APP-6D / MIL-STD-2525C)
+### Military Symbols (APP-6D / MIL-STD-2525C)
 - Single and batch symbol rendering (SVG, PNG) via embedded milsymbol server
 - SIDC validation and format detection
 - Full modifier support (designation, direction, speed, HQ, etc.)
@@ -140,7 +140,11 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://dufour-app.onrender.com",
+        "https://app.intelligeo.net",
+        "https://dufour.app",
+        "https://www.dufour.app",
         "http://localhost:5173",
+        "http://localhost:8081",
         "http://localhost"
     ],
     allow_credentials=True,
@@ -536,7 +540,7 @@ async def publish_project(
     
     ### Example:
     ```bash
-    curl -X POST "https://dufour-api.onrender.com/api/projects/publish" \\
+    curl -X POST "https://api.intelligeo.net/api/projects/publish" \\
       -F "name=my_map" \\
       -F "title=My Map" \\
       -F "file=@project.qgz"
@@ -812,7 +816,7 @@ async def list_themes():
           "id": "swiss_municipalities",
           "title": "Swiss Municipalities",
           "thumbnail": "thumb.png",
-          "wms_url": "https://dufour-api.onrender.com/api/projects/swiss_municipalities/wms"
+          "wms_url": "https://api.intelligeo.net/api/projects/swiss_municipalities/wms"
         }
       ]
     }
@@ -854,7 +858,7 @@ async def get_theme_config(theme_name: str):
     {
       "id": "swiss_municipalities",
       "title": "Swiss Municipalities",
-      "wms_url": "https://dufour-api.onrender.com/api/projects/swiss_municipalities/wms",
+      "wms_url": "https://api.intelligeo.net/api/projects/swiss_municipalities/wms",
       "extent": [2485000, 1075000, 2834000, 1295000],
       "crs": "EPSG:2056",
       "layers": [
@@ -1448,7 +1452,7 @@ async def wms_proxy(project_name: str, request: Request):
     
     const layer = new TileLayer({
       source: new TileWMS({
-        url: 'https://dufour-api.onrender.com/api/projects/my_project/wms',
+        url: 'https://api.intelligeo.net/api/projects/my_project/wms',
         params: {
           'LAYERS': 'municipalities',
           'TILED': true

@@ -7,7 +7,7 @@ The Dufour Middleware API is a FastAPI-based service for managing QGIS projects,
 ## 📚 Interactive Documentation
 
 ### Swagger UI (Recommended)
-**URL:** `https://dufour-api.onrender.com/docs`
+**URL:** `https://api.intelligeo.net/docs`
 
 - Interactive API explorer
 - Try endpoints directly in browser
@@ -15,14 +15,14 @@ The Dufour Middleware API is a FastAPI-based service for managing QGIS projects,
 - Schema validation
 
 ### ReDoc (Alternative)
-**URL:** `https://dufour-api.onrender.com/redoc`
+**URL:** `https://api.intelligeo.net/redoc`
 
 - Clean, three-panel layout
 - Better for reading documentation
 - Printable format
 
 ### OpenAPI Specification
-**URL:** `https://dufour-api.onrender.com/openapi.json`
+**URL:** `https://api.intelligeo.net/openapi.json`
 
 - Machine-readable API spec
 - Import into Postman/Insomnia
@@ -35,7 +35,7 @@ The Dufour Middleware API is a FastAPI-based service for managing QGIS projects,
 ### 1. Check API Health
 
 ```bash
-curl https://dufour-api.onrender.com/
+curl https://api.intelligeo.net/
 ```
 
 **Response:**
@@ -50,7 +50,7 @@ curl https://dufour-api.onrender.com/
 ### 2. List Projects
 
 ```bash
-curl https://dufour-api.onrender.com/api/projects
+curl https://api.intelligeo.net/api/projects
 ```
 
 **Response:**
@@ -72,7 +72,7 @@ curl https://dufour-api.onrender.com/api/projects
 ### 3. Upload QGIS Project
 
 ```bash
-curl -X POST "https://dufour-api.onrender.com/api/projects" \
+curl -X POST "https://api.intelligeo.net/api/projects" \
   -F "name=my_project" \
   -F "title=My Awesome Project" \
   -F "description=Contains Swiss data" \
@@ -175,7 +175,7 @@ async def upload_project():
         
         # Upload
         response = await client.post(
-            "https://dufour-api.onrender.com/api/projects",
+            "https://api.intelligeo.net/api/projects",
             data={
                 "name": "my_project",
                 "title": "My Project",
@@ -199,7 +199,7 @@ async function uploadProject(file) {
   formData.append('is_public', 'true');
   formData.append('file', file);
   
-  const response = await fetch('https://dufour-api.onrender.com/api/projects', {
+  const response = await fetch('https://api.intelligeo.net/api/projects', {
     method: 'POST',
     body: formData
   });
@@ -212,14 +212,14 @@ async function uploadProject(file) {
 
 ```bash
 # GetCapabilities
-curl "https://dufour-api.onrender.com/api/projects/my_project/wms?SERVICE=WMS&REQUEST=GetCapabilities"
+curl "https://api.intelligeo.net/api/projects/my_project/wms?SERVICE=WMS&REQUEST=GetCapabilities"
 
 # GetMap
-curl "https://dufour-api.onrender.com/api/projects/my_project/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=municipalities&BBOX=2485000,1075000,2834000,1295000&WIDTH=800&HEIGHT=600&SRS=EPSG:2056&FORMAT=image/png" \
+curl "https://api.intelligeo.net/api/projects/my_project/wms?SERVICE=WMS&REQUEST=GetMap&LAYERS=municipalities&BBOX=2485000,1075000,2834000,1295000&WIDTH=800&HEIGHT=600&SRS=EPSG:2056&FORMAT=image/png" \
   --output map.png
 
 # GetFeatureInfo
-curl "https://dufour-api.onrender.com/api/projects/my_project/wms?SERVICE=WMS&REQUEST=GetFeatureInfo&LAYERS=municipalities&QUERY_LAYERS=municipalities&X=400&Y=300&INFO_FORMAT=application/json"
+curl "https://api.intelligeo.net/api/projects/my_project/wms?SERVICE=WMS&REQUEST=GetFeatureInfo&LAYERS=municipalities&QUERY_LAYERS=municipalities&X=400&Y=300&INFO_FORMAT=application/json"
 ```
 
 ### OpenLayers Integration
@@ -235,7 +235,7 @@ const map = new Map({
   layers: [
     new TileLayer({
       source: new TileWMS({
-        url: 'https://dufour-api.onrender.com/api/projects/my_project/wms',
+        url: 'https://api.intelligeo.net/api/projects/my_project/wms',
         params: {
           'LAYERS': 'municipalities',
           'TILED': true
@@ -316,7 +316,7 @@ All extents are `[xmin, ymin, xmax, ymax]` in the project's CRS.
 ## 🧪 Testing
 
 ### Using Swagger UI:
-1. Navigate to `https://dufour-api.onrender.com/docs`
+1. Navigate to `https://api.intelligeo.net/docs`
 2. Click on any endpoint
 3. Click "Try it out"
 4. Fill in parameters
@@ -324,7 +324,7 @@ All extents are `[xmin, ymin, xmax, ymax]` in the project's CRS.
 6. View response
 
 ### Using Postman:
-1. Import OpenAPI spec: `https://dufour-api.onrender.com/openapi.json`
+1. Import OpenAPI spec: `https://api.intelligeo.net/openapi.json`
 2. All endpoints appear in collection
 3. Edit parameters and execute
 
@@ -334,13 +334,13 @@ All extents are `[xmin, ymin, xmax, ymax]` in the project's CRS.
 pip install httpie
 
 # Health check
-http https://dufour-api.onrender.com/
+http https://api.intelligeo.net/
 
 # List projects
-http https://dufour-api.onrender.com/api/projects
+http https://api.intelligeo.net/api/projects
 
 # Upload (form data)
-http --form POST https://dufour-api.onrender.com/api/projects \
+http --form POST https://api.intelligeo.net/api/projects \
   name=my_project \
   title="My Project" \
   is_public=true \
@@ -393,16 +393,16 @@ The milsymbol-server runs as a sidecar process (Node.js, port 2525) inside the s
 
 ```bash
 # APP-6D: Friendly ground infantry company
-curl https://dufour-api.onrender.com/api/symbols/10031000001101001500.svg
+curl https://api.intelligeo.net/api/symbols/10031000001101001500.svg
 
 # 2525C: Friendly ground unit with modifiers
-curl "https://dufour-api.onrender.com/api/symbols/SFG-UCI---.svg?uniqueDesignation=1/INF&size=120"
+curl "https://api.intelligeo.net/api/symbols/SFG-UCI---.svg?uniqueDesignation=1/INF&size=120"
 ```
 
 ### Render a Symbol (PNG)
 
 ```bash
-curl -o symbol.png "https://dufour-api.onrender.com/api/symbols/SFG-UCI---.png?size=200"
+curl -o symbol.png "https://api.intelligeo.net/api/symbols/SFG-UCI---.png?size=200"
 ```
 
 ### Modifier Options (Query String)
@@ -437,7 +437,7 @@ All milsymbol.js modifiers are supported as query parameters:
 ### Validate SIDC
 
 ```bash
-curl https://dufour-api.onrender.com/api/symbols/validate/10031000001101001500
+curl https://api.intelligeo.net/api/symbols/validate/10031000001101001500
 ```
 
 **Response:**
@@ -455,7 +455,7 @@ curl https://dufour-api.onrender.com/api/symbols/validate/10031000001101001500
 Render up to 100 symbols in a single request. Efficient for ORBAT displays.
 
 ```bash
-curl -X POST "https://dufour-api.onrender.com/api/symbols/batch" \
+curl -X POST "https://api.intelligeo.net/api/symbols/batch" \
   -H "Content-Type: application/json" \
   -d '{
     "symbols": [
@@ -485,7 +485,7 @@ curl -X POST "https://dufour-api.onrender.com/api/symbols/batch" \
 ### Symbol Health Check
 
 ```bash
-curl https://dufour-api.onrender.com/api/symbols/health
+curl https://api.intelligeo.net/api/symbols/health
 ```
 
 **Response:**
@@ -504,7 +504,7 @@ curl https://dufour-api.onrender.com/api/symbols/health
 ### Clear Symbol Cache
 
 ```bash
-curl -X DELETE https://dufour-api.onrender.com/api/symbols/cache
+curl -X DELETE https://api.intelligeo.net/api/symbols/cache
 ```
 
 ### Caching Behavior
@@ -522,7 +522,7 @@ Compose print-ready maps by overlaying military symbols on QGIS Server base maps
 ### POST `/api/print/compose`
 
 ```bash
-curl -X POST "https://dufour-api.onrender.com/api/print/compose" \
+curl -X POST "https://api.intelligeo.net/api/print/compose" \
   -H "Content-Type: application/json" \
   -d '{
     "extent": {

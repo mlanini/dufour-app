@@ -5,7 +5,7 @@ Backend API service per la gestione di progetti QGIS, upload dati PostGIS e **re
 ## 📚 Documentazione Completa
 
 ### 🔥 Swagger UI Interattivo (Consigliato)
-**URL:** `http://localhost:3000/docs` (dev) | `https://dufour-api.onrender.com/docs` (prod)
+**URL:** `http://localhost:3000/docs` (dev) | `https://api.intelligeo.net/docs` (prod)
 
 - ✅ Esplora tutti gli endpoints
 - ✅ Prova le richieste direttamente nel browser
@@ -13,7 +13,7 @@ Backend API service per la gestione di progetti QGIS, upload dati PostGIS e **re
 - ✅ Valida schemi automaticamente
 
 ### 📖 ReDoc (Documentazione Leggibile)
-**URL:** `http://localhost:3000/redoc` (dev) | `https://dufour-api.onrender.com/redoc` (prod)
+**URL:** `http://localhost:3000/redoc` (dev) | `https://api.intelligeo.net/redoc` (prod)
 
 - Layout pulito a tre pannelli
 - Ottimo per leggere la documentazione
