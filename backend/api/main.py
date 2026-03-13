@@ -140,6 +140,7 @@ app.add_middleware(
     CORSMiddleware,
     allow_origins=[
         "https://dufour-app.onrender.com",
+        "https://dev.dufour.app",
         "https://app.intelligeo.net",
         "https://dufour.app",
         "https://www.dufour.app",
@@ -175,6 +176,20 @@ async def global_exception_handler(request, exc):
         headers={
             "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Credentials": "true",
+            "Access-Control-Allow-Methods": "*",
+            "Access-Control-Allow-Headers": "*",
+        }
+    )
+
+# HTTPException handler to ensure CORS headers on 4xx errors (404, 422, etc.)
+@app.exception_handler(HTTPException)
+async def http_exception_handler(request, exc):
+    from fastapi.responses import JSONResponse
+    return JSONResponse(
+        status_code=exc.status_code,
+        content={"detail": exc.detail},
+        headers={
+            "Access-Control-Allow-Origin": "*",
             "Access-Control-Allow-Methods": "*",
             "Access-Control-Allow-Headers": "*",
         }
