@@ -60,7 +60,8 @@
           "mapOptions": {
             "zoomDuration": 250,
             "enableRotation": true,
-            "panStepSize": 0.25
+            "panStepSize": 0.25,
+            "constrainExtent": false
           },
           "toolsOptions": {
             "MeasurementSupport": {
