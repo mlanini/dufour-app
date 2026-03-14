@@ -93,13 +93,13 @@ Currently public API. Future versions will implement JWT authentication.
 """,
     version="1.0.0",
     contact={
-        "name": "Michael Lanini",
-        "url": "https://github.com/intelligeo/dufour-app",
-        "email": "mlanini@proton.me"
+        "name": "INTELLIGEO.ch",
+        "url": "https://intelligeo.ch/",
+        "email": "dufour@intelligeo.ch"
     },
     license_info={
-        "name": "MIT License",
-        "url": "https://opensource.org/licenses/MIT"
+        "name": "BSD 2-Clause",
+        "url": "https://github.com/intelligeo/dufour-app/blob/main/LICENSE"
     },
     openapi_tags=[
         {
@@ -814,7 +814,7 @@ async def list_tables(
 # ==================== QWC ENDPOINTS ====================
 
 @app.get("/themes.json", tags=["qwc2"])
-async def get_themes_json(request: Request):
+async def get_themes_json():
     """
     # QWC2 Themes Configuration
 
@@ -828,9 +828,9 @@ async def get_themes_json(request: Request):
     - Default scales, CRS, print settings
     """
     try:
-        # Determine base URL from request for WMS proxy URLs
-        api_base_url = str(request.base_url).rstrip('/')
-        themes = await qwc_service.generate_full_themes_json(api_base_url)
+        # Use empty base URL so WMS URLs are relative (e.g. /api/projects/{name}/wms)
+        # This avoids http/https mismatch when TLS is terminated by reverse proxy
+        themes = await qwc_service.generate_full_themes_json("")
         return JSONResponse(content=themes)
     except Exception as e:
         logger.error(f"Error generating themes.json: {e}")

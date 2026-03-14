@@ -98,15 +98,51 @@ set -e\n\
 \n\
 echo "=== Starting Dufour Backend ==="\n\
 \n\
-# Start QGIS Server via spawn-fcgi on FastCGI port 9993\n\
+# Start virtual display for QGIS Server\n\
 Xvfb :99 -screen 0 1024x768x24 -nolisten tcp &\n\
 export DISPLAY=:99\n\
-spawn-fcgi -n -p 9993 -f /usr/lib/cgi-bin/qgis_mapserv.fcgi &\n\
-echo "✅ QGIS Server (FastCGI) started on port 9993"\n\
+sleep 1\n\
 \n\
-# Start nginx as HTTP-to-FastCGI bridge on port 8080\n\
-nginx -c /etc/nginx/qgis-nginx.conf\n\
-echo "✅ nginx (QGIS proxy) started on port 8080"\n\
+# Verify QGIS Server binary exists\n\
+QGIS_FCGI=/usr/lib/cgi-bin/qgis_mapserv.fcgi\n\
+if [ ! -f "$QGIS_FCGI" ]; then\n\
+  echo "❌ QGIS Server binary not found at $QGIS_FCGI"\n\
+  echo "   Available cgi-bin files: $(ls /usr/lib/cgi-bin/ 2>/dev/null || echo none)"\n\
+  echo "   Searching: $(find / -name qgis_mapserv* 2>/dev/null | head -5)"\n\
+  echo "⚠️  Continuing without QGIS Server (WMS endpoints will return 502)"\n\
+else\n\
+  # Start QGIS Server via spawn-fcgi on FastCGI port 9993\n\
+  spawn-fcgi -p 9993 -f "$QGIS_FCGI" -- 2>&1 || true\n\
+  echo "✅ QGIS Server (FastCGI) spawned on port 9993"\n\
+  \n\
+  # Start nginx as HTTP-to-FastCGI bridge on port 8080\n\
+  nginx -c /etc/nginx/qgis-nginx.conf 2>&1 || true\n\
+  echo "✅ nginx (QGIS proxy) started on port 8080"\n\
+  \n\
+  # Wait and verify QGIS Server responds\n\
+  QGIS_READY=0\n\
+  for i in $(seq 1 10); do\n\
+    if curl -sf "http://localhost:8080/?SERVICE=WMS&REQUEST=GetCapabilities&MAP=/dev/null" > /dev/null 2>&1; then\n\
+      QGIS_READY=1\n\
+      break\n\
+    fi\n\
+    # Even a non-200 HTTP response means nginx+fcgi are working\n\
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://localhost:8080/" 2>/dev/null || echo "000")\n\
+    if [ "$HTTP_CODE" != "000" ]; then\n\
+      QGIS_READY=1\n\
+      echo "✅ QGIS Server responding (HTTP $HTTP_CODE)"\n\
+      break\n\
+    fi\n\
+    sleep 1\n\
+  done\n\
+  \n\
+  if [ "$QGIS_READY" -eq 0 ]; then\n\
+    echo "⚠️  WARNING: QGIS Server not responding on port 8080 after 10s"\n\
+    echo "   nginx error log:"\n\
+    cat /var/log/nginx/qgis-error.log 2>/dev/null | tail -10 || true\n\
+    echo "   spawn-fcgi processes: $(pgrep -a qgis 2>/dev/null || echo none)"\n\
+  fi\n\
+fi\n\
 \n\
 # Start Milsymbol Server (sidecar) with log capture\n\
 cd /milsymbol && node index.js > /var/log/milsymbol.log 2>&1 &\n\
@@ -116,7 +152,6 @@ echo "🎖️  Milsymbol Server PID=$MILSYMBOL_PID starting on port ${MILSYMBOL_
 # Wait for milsymbol server to be ready (up to 10s)\n\
 MILSYMBOL_READY=0\n\
 for i in $(seq 1 20); do\n\
-  # Check if process is still alive\n\
   if ! kill -0 $MILSYMBOL_PID 2>/dev/null; then\n\
     echo "❌ Milsymbol Server process died! Log output:"\n\
     cat /var/log/milsymbol.log\n\

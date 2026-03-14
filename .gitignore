@@ -55,6 +55,13 @@ build/
 # QGIS
 *.qgs~
 *.qgs.backup
+*.qgz
+*.qgz~
+*.qgs
+*.qgt
+*.gpkg
+*.shp
+*.fgb
 
 # Docker
 .dockerignore
