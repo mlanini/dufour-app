@@ -141,7 +141,7 @@ app.add_middleware(
     allow_origins=[
         "https://dufour-app.onrender.com",
         "https://dev.dufour.app",
-        "https://app.intelligeo.net",
+        "https://map.dufour.app",
         "https://dufour.app",
         "https://www.dufour.app",
         "http://localhost:5173",
@@ -1518,7 +1518,7 @@ async def wms_proxy(project_name: str, request: Request):
             logger.info(f"WMS: wrote {project_name}.qgz ({len(qgz_bytes)} bytes) to {temp_path}")
         
         # 3. Forward to QGIS Server with MAP parameter
-        qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://localhost:8080')
+        qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://localhost:80')
         
         # Build query string with MAP parameter
         query_params = dict(request.query_params)
@@ -1557,7 +1557,7 @@ async def wms_proxy(project_name: str, request: Request):
     except HTTPException:
         raise
     except httpx.ConnectError as e:
-        logger.error(f"WMS proxy: cannot reach QGIS Server at {os.getenv('QGIS_SERVER_URL', 'http://localhost:8080')}: {e}")
+        logger.error(f"WMS proxy: cannot reach QGIS Server at {os.getenv('QGIS_SERVER_URL', 'http://localhost:80')}: {e}")
         raise HTTPException(
             status_code=502,
             detail=f"QGIS Server unreachable. The map rendering service is not available. ({e})"
