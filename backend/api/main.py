@@ -639,8 +639,16 @@ async def delete_project(project_name: str):
     This operation cannot be undone. PostGIS tables must be dropped manually.
     """
     try:
-        result = await project_service.delete_project(project_name)
-        if not result:
+        # Delete from PostgreSQL database (primary storage)
+        deleted = storage_service.delete_project(project_name)
+
+        # Also attempt to clean up legacy filesystem files (.qgs / .qgz)
+        try:
+            await project_service.delete_project(project_name)
+        except Exception:
+            pass  # Filesystem cleanup is best-effort
+
+        if not deleted:
             raise HTTPException(status_code=404, detail="Project not found")
         return {"message": f"Project {project_name} deleted successfully"}
     except HTTPException:
