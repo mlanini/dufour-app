@@ -29,7 +29,7 @@
           {"name": "osm"}
         ],
         "sublayers": [],
-  "thumbnail": "assets/img/mapthumbs/default.jpg",
+        "thumbnail": "img/mapthumbs/default.jpg",
         "additionalMouseCrs": ["EPSG:2056", "EPSG:4326", "EPSG:21781", "MGRS"]
       }
     ],
@@ -56,7 +56,7 @@
         "type": "xyz",
         "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
         "projection": "EPSG:3857",
-  "thumbnail": "assets/arcgis_imagery.jpg",
+        "thumbnail": "arcgis_imagery.jpg",
         "attribution": "Esri, DigitalGlobe, GeoEye, Earthstar Geographics"
       },
       {
@@ -65,7 +65,7 @@
         "type": "xyz",
         "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
         "projection": "EPSG:3857",
-  "thumbnail": "assets/arcgis_topo.jpg",
+        "thumbnail": "arcgis_topo.jpg",
         "attribution": "Esri, HERE, Garmin, OpenStreetMap contributors"
       },
       {
@@ -88,7 +88,7 @@
         "title": "OpenStreetMap",
         "type": "osm",
         "source": "osm",
-  "thumbnail": "assets/osm.jpg",
+        "thumbnail": "osm.jpg",
         "attribution": "OpenStreetMap contributors"
       }
     ]

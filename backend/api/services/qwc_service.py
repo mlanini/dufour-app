@@ -170,7 +170,7 @@ class QWCService:
                         {"name": "osm"}
                     ],
                     "sublayers": [],
-                    "thumbnail": "assets/img/mapthumbs/default.jpg",
+                    "thumbnail": "img/mapthumbs/default.jpg",
                     "additionalMouseCrs": ["EPSG:2056", "EPSG:4326", "EPSG:21781", "MGRS"]
                 }
                 items.append(item)
@@ -212,7 +212,7 @@ class QWCService:
                         {"name": "osm"}
                     ],
                     "sublayers": [],
-                    "thumbnail": "assets/img/mapthumbs/default.jpg"
+                    "thumbnail": "img/mapthumbs/default.jpg"
                 }
                 items.append(item)
             except Exception:
@@ -241,7 +241,7 @@ class QWCService:
                     {"name": "osm"}
                 ],
                 "sublayers": [],
-                "thumbnail": "assets/img/mapthumbs/default.jpg",
+                "thumbnail": "img/mapthumbs/default.jpg",
                 "additionalMouseCrs": ["EPSG:2056", "EPSG:4326", "EPSG:21781", "MGRS"]
             })
 
@@ -291,7 +291,7 @@ class QWCService:
                 "type": "xyz",
                 "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
                 "projection": "EPSG:3857",
-                "thumbnail": "assets/arcgis_imagery.jpg",
+                "thumbnail": "arcgis_imagery.jpg",
                 "attribution": "Esri, DigitalGlobe, GeoEye, Earthstar Geographics"
             },
             {
@@ -300,12 +300,12 @@ class QWCService:
                 "type": "xyz",
                 "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}",
                 "projection": "EPSG:3857",
-                "thumbnail": "assets/arcgis_topo.jpg",
+                "thumbnail": "arcgis_topo.jpg",
                 "attribution": "Esri, HERE, Garmin, OpenStreetMap contributors"
             },
             {
                 "name": "swisstopo_national",
-                "title": "SwissTopo National Map",
+                "title": "swisstopo Maps",
                 "type": "wmts",
                 "url": "https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
                 "tileMatrixPrefix": "",
@@ -317,7 +317,7 @@ class QWCService:
                                 1750, 1500, 1250, 1000, 750, 650, 500, 250, 100, 50,
                                 20, 10, 5, 2.5, 2, 1.5, 1, 0.5],
                 "tileSize": [256, 256],
-                "thumbnail": "assets/swisstopo.jpg",
+                "thumbnail": "swisstopo.jpg",
                 "attribution": "swisstopo"
             },
             {
@@ -325,7 +325,7 @@ class QWCService:
                 "title": "OpenStreetMap",
                 "type": "osm",
                 "source": "osm",
-                "thumbnail": "assets/osm.jpg",
+                "thumbnail": "osm.jpg",
                 "attribution": "OpenStreetMap contributors"
             }
         ]
@@ -446,7 +446,7 @@ class QWCService:
         return [
             {
                 "name": "swisstopo",
-                "title": "SwissTopo National Map",
+                "title": "swisstopo Maps",
                 "type": "wmts",
                 "url": "https://wmts.geo.admin.ch/1.0.0/{Layer}/default/current/3857/{TileMatrix}/{TileRow}/{TileCol}.jpeg",
                 "tileMatrixSet": "3857",
@@ -460,7 +460,7 @@ class QWCService:
                     20, 10, 5, 2.5, 2, 1.5, 1, 0.5
                 ],
                 "visibility": True,
-                "thumbnail": "assets/swisstopo.jpg"
+                "thumbnail": "swisstopo.jpg"
             },
             {
                 "name": "osm",

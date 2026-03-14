@@ -1515,6 +1515,7 @@ async def wms_proxy(project_name: str, request: Request):
         # Cache: only write if not exists or outdated
         if not temp_path.exists() or temp_path.stat().st_size != len(qgz_bytes):
             temp_path.write_bytes(qgz_bytes)
+            logger.info(f"WMS: wrote {project_name}.qgz ({len(qgz_bytes)} bytes) to {temp_path}")
         
         # 3. Forward to QGIS Server with MAP parameter
         qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://localhost:8080')
@@ -1523,21 +1524,25 @@ async def wms_proxy(project_name: str, request: Request):
         query_params = dict(request.query_params)
         query_params['MAP'] = str(temp_path)
         
-        # Handle both GET and POST (QWC2 uses POST for GetMap/GetFeatureInfo)
+        # Ensure SERVICE and REQUEST are present (QWC2 may send via POST body)
         async with httpx.AsyncClient(timeout=30.0) as client:
             if request.method == "POST":
-                # POST: merge form body params into query params
                 body = await request.body()
-                # QGIS Server expects GET with query params even for POST data
-                # Parse form-encoded body and merge
                 from urllib.parse import parse_qs
                 post_params = parse_qs(body.decode("utf-8", errors="replace"))
                 for key, values in post_params.items():
                     if key not in query_params:
                         query_params[key] = values[0]
-                response = await client.get(qgis_server_url, params=query_params)
-            else:
-                response = await client.get(qgis_server_url, params=query_params)
+            
+            # Log the forwarded request for debugging
+            logger.info(f"WMS proxy → {qgis_server_url} params={list(query_params.keys())}")
+            
+            response = await client.get(qgis_server_url, params=query_params)
+            
+            # Log non-200 responses for debugging
+            if response.status_code != 200:
+                logger.warning(f"WMS proxy: QGIS Server returned {response.status_code} for {project_name}")
+                logger.warning(f"WMS response body (first 500 chars): {response.text[:500]}")
             
             # Return QGIS Server response with correct Content-Type
             return Response(
@@ -1551,10 +1556,22 @@ async def wms_proxy(project_name: str, request: Request):
     
     except HTTPException:
         raise
+    except httpx.ConnectError as e:
+        logger.error(f"WMS proxy: cannot reach QGIS Server at {os.getenv('QGIS_SERVER_URL', 'http://localhost:8080')}: {e}")
+        raise HTTPException(
+            status_code=502,
+            detail=f"QGIS Server unreachable. The map rendering service is not available. ({e})"
+        )
+    except httpx.TimeoutException as e:
+        logger.error(f"WMS proxy: QGIS Server timeout for {project_name}: {e}")
+        raise HTTPException(
+            status_code=504,
+            detail=f"QGIS Server timeout while rendering {project_name}"
+        )
     except Exception as e:
         import traceback
-        print(f"WMS proxy error: {e}")
-        print(traceback.format_exc())
+        logger.error(f"WMS proxy error: {e}")
+        logger.error(traceback.format_exc())
         raise HTTPException(status_code=500, detail=f"WMS proxy error: {str(e)}")
 
 
