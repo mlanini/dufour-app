@@ -302,25 +302,50 @@ async def upload_and_migrate_project(
     title: Optional[str] = Form(None, description="Display title", example="My Awesome Project"),
     description: Optional[str] = Form(None, description="Project description", example="Contains Swiss municipalities and transportation layers"),
     is_public: bool = Form(False, description="Public visibility"),
-    file: UploadFile = File(..., description="QGIS project file (.qgz)")
+    file: UploadFile = File(..., description="QGIS project file (.qgz)"),
+    data_files: List[UploadFile] = File([], description="Companion data files (.gpkg, .geojson, .shp, .dbf, .shx, .prj, .cpg, .fgb, .csv)")
 ):
     """
     # Upload and Migrate QGIS Project
     
     Upload a .qgz project file with automatic layer migration to PostGIS.
     
+    ## Companion Data Files
+    
+    QGIS projects often reference external data files (GeoPackage, GeoJSON,
+    Shapefile, etc.) with relative paths like `./data.gpkg`. These files are
+    **not** embedded in the .qgz archive.
+    
+    Upload them via the `data_files` parameter so that layer migration can
+    find and extract them to PostGIS.
+    
+    **Supported formats**: `.gpkg`, `.geojson`, `.json`, `.shp` (+ `.dbf`,
+    `.shx`, `.prj`, `.cpg`), `.fgb`, `.csv`
+    
+    ### Example with curl
+    ```bash
+    curl -X POST https://api.intelligeo.net/api/projects \\
+      -F 'name=my_project' \\
+      -F 'title=My Project' \\
+      -F 'file=@project.qgz' \\
+      -F 'data_files=@data.gpkg' \\
+      -F 'data_files=@points.geojson'
+    ```
+    
     ## Workflow:
     
     1. **Validation**: Check file extension, size (50MB max), name format
-    2. **Parsing**: Extract project structure, layers, CRS, extent
-    3. **Migration**: Convert local layers (GeoPackage, GeoJSON, Shapefile) to PostGIS tables
-    4. **Datasource Update**: Rewrite .qgz to reference PostGIS connections
-    5. **Storage**: Store modified .qgz in PostgreSQL BYTEA column
+    2. **Companion files**: Copy uploaded data files alongside extracted .qgz
+    3. **Parsing**: Extract project structure, layers, CRS, extent
+    4. **Migration**: Convert local layers (GeoPackage, GeoJSON, Shapefile) to PostGIS tables
+    5. **Datasource Update**: Rewrite .qgz to reference PostGIS connections
+    6. **Storage**: Store modified .qgz in PostgreSQL BYTEA column
     
     ## Supported Layer Sources:
     - GeoPackage (.gpkg)
     - GeoJSON (.geojson)
     - Shapefile (.shp)
+    - FlatGeobuf (.fgb)
     - CSV with coordinates
     
     ## Naming Rules:
@@ -357,12 +382,18 @@ async def upload_and_migrate_project(
     ```
     
     ## Errors:
-    - `400`: Invalid file type or name format
+    - `400`: Invalid file type, name format, or companion file extension
     - `500`: Migration failure (tables rolled back automatically)
     """
     import uuid
     from datetime import datetime
     from sqlalchemy import text
+    
+    # Allowed companion file extensions
+    ALLOWED_DATA_EXTENSIONS = {
+        '.gpkg', '.geojson', '.json', '.shp', '.dbf', '.shx', '.prj', '.cpg',
+        '.fgb', '.csv'
+    }
     
     try:
         # Validate file extension
@@ -379,8 +410,20 @@ async def upload_and_migrate_project(
                 detail="Project name must be lowercase alphanumeric with underscores only"
             )
         
+        # Validate companion file extensions
+        for df in data_files:
+            if df.filename:
+                ext = Path(df.filename).suffix.lower()
+                if ext not in ALLOWED_DATA_EXTENSIONS:
+                    raise HTTPException(
+                        status_code=400,
+                        detail=f"Unsupported companion file type: {df.filename}. "
+                               f"Allowed: {', '.join(sorted(ALLOWED_DATA_EXTENSIONS))}"
+                    )
+        
         # Save uploaded file to temp location
         temp_file = Path(tempfile.mktemp(suffix='.qgz'))
+        companion_dir = None
         try:
             content = await file.read()
             
@@ -393,11 +436,36 @@ async def upload_and_migrate_project(
             
             temp_file.write_bytes(content)
             
+            # Save companion data files to a temp directory
+            # They will be copied into the .qgz extraction dir by the migrator
+            companion_paths: List[Path] = []
+            if data_files:
+                companion_dir = Path(tempfile.mkdtemp(prefix='qgz_companion_'))
+                total_companion_size = 0
+                for df in data_files:
+                    if df.filename and df.size and df.size > 0:
+                        df_content = await df.read()
+                        total_companion_size += len(df_content)
+                        
+                        # 200MB total limit for companion files
+                        if total_companion_size > 200 * 1024 * 1024:
+                            raise HTTPException(
+                                status_code=400,
+                                detail="Total companion data files size exceeds 200MB limit"
+                            )
+                        
+                        companion_path = companion_dir / df.filename
+                        companion_path.parent.mkdir(parents=True, exist_ok=True)
+                        companion_path.write_bytes(df_content)
+                        companion_paths.append(companion_path)
+                        logger.info(f"Saved companion file: {df.filename} ({len(df_content)} bytes)")
+            
             # Migrate project: parse, extract layers, update datasources
             project_info, migration_results, modified_qgz_bytes = project_migrator.migrate_project(
                 qgz_path=temp_file,
                 project_name=name,
-                target_crs='EPSG:2056'  # Swiss LV95
+                target_crs='EPSG:2056',  # Swiss LV95
+                companion_files=companion_paths
             )
             
             # Check if any migrations failed critically
@@ -527,9 +595,12 @@ async def upload_and_migrate_project(
             }
             
         finally:
-            # Clean up temp file
+            # Clean up temp files
             if temp_file.exists():
                 temp_file.unlink()
+            if companion_dir and companion_dir.exists():
+                import shutil
+                shutil.rmtree(companion_dir, ignore_errors=True)
         
     except HTTPException:
         raise

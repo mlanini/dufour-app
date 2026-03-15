@@ -5,6 +5,7 @@ Orchestrates .qgz parsing, layer extraction, and database storage
 from pathlib import Path
 from typing import List, Optional, Tuple
 import logging
+import shutil
 from sqlalchemy.engine import Engine
 
 from services.qgz_parser import QGZParser, LayerInfo, ProjectInfo
@@ -30,20 +31,25 @@ class ProjectMigrator:
         self,
         qgz_path: Path,
         project_name: str,
-        target_crs: str = 'EPSG:2056'
+        target_crs: str = 'EPSG:2056',
+        companion_files: Optional[List[Path]] = None
     ) -> Tuple[ProjectInfo, List[MigrationResult], Optional[bytes]]:
         """
         Migrate QGIS project to cloud storage
         
         1. Parse .qgz file
-        2. Extract local layers to PostGIS
-        3. Update .qgz datasources to point to PostGIS
-        4. Return modified .qgz as bytes
+        2. Copy companion data files alongside extracted .qgz
+        3. Extract local layers to PostGIS
+        4. Update .qgz datasources to point to PostGIS
+        5. Return modified .qgz as bytes
         
         Args:
             qgz_path: Path to .qgz file
             project_name: Project identifier (for table naming)
             target_crs: Target CRS for PostGIS layers
+            companion_files: Optional list of data files (.gpkg, .geojson, etc.)
+                             to copy into the extraction directory so that
+                             relative-path datasources can be resolved.
             
         Returns:
             Tuple of (ProjectInfo, List[MigrationResult], modified_qgz_bytes)
@@ -64,6 +70,17 @@ class ProjectMigrator:
                     f"Parsed project: {project_info.title}, "
                     f"{len(project_info.layers)} layers"
                 )
+                
+                # Step 1b: Copy companion data files into extraction directory
+                if companion_files:
+                    for companion_path in companion_files:
+                        if companion_path.exists():
+                            dest = parser.temp_dir / companion_path.name
+                            shutil.copy2(companion_path, dest)
+                            logger.info(
+                                f"Copied companion file: {companion_path.name} "
+                                f"-> {dest}"
+                            )
                 
                 # Step 2: Migrate local layers to PostGIS
                 extractor = LayerExtractor(project_name, self.engine)
@@ -102,8 +119,11 @@ class ProjectMigrator:
                     )
                     
                     if not source_path:
+                        # Extract filename for clearer error message
+                        ds = layer_info.datasource.split('|')[0].lstrip('./')
                         logger.error(
-                            f"Source file not found for layer: {layer_info.name}"
+                            f"Source file not found for layer: {layer_info.name} "
+                            f"(datasource: {ds})"
                         )
                         migration_results.append(MigrationResult(
                             layer_name=layer_info.name,
@@ -113,7 +133,8 @@ class ProjectMigrator:
                             source_crs='',
                             target_crs=target_crs,
                             success=False,
-                            error="Source file not found"
+                            error=f"Source file not found: {ds}. "
+                                  f"Upload it via the data_files parameter."
                         ))
                         continue
                     
