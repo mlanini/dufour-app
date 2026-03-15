@@ -24,6 +24,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install milsymbol-server
+# cache-bust: 2026-03-15
 WORKDIR /milsymbol
 COPY milsymbol-server/package.json milsymbol-server/package-lock.json* ./
 RUN npm install --production
