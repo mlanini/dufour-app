@@ -303,7 +303,7 @@ async def upload_and_migrate_project(
     description: Optional[str] = Form(None, description="Project description", example="Contains Swiss municipalities and transportation layers"),
     is_public: bool = Form(False, description="Public visibility"),
     file: UploadFile = File(..., description="QGIS project file (.qgz)"),
-    data_files: List[UploadFile] = File([], description="Companion data files (.gpkg, .geojson, .shp, .dbf, .shx, .prj, .cpg, .fgb, .csv)")
+    data_files: Optional[List[UploadFile]] = File(None, description="Companion data files (.gpkg, .geojson, .shp, .dbf, .shx, .prj, .cpg, .fgb, .csv)")
 ):
     """
     # Upload and Migrate QGIS Project
@@ -411,7 +411,7 @@ async def upload_and_migrate_project(
             )
         
         # Validate companion file extensions
-        for df in data_files:
+        for df in (data_files or []):
             if df.filename:
                 ext = Path(df.filename).suffix.lower()
                 if ext not in ALLOWED_DATA_EXTENSIONS:
@@ -530,10 +530,11 @@ async def upload_and_migrate_project(
                     extent_maxx = EXCLUDED.extent_maxx,
                     extent_maxy = EXCLUDED.extent_maxy,
                     updated_at = EXCLUDED.updated_at
+                RETURNING id
             """)
             
             with db.get_engine().connect() as conn:
-                conn.execute(insert_sql, {
+                result = conn.execute(insert_sql, {
                     'id': project_id,
                     'user_id': None,  # TODO: Get from auth context
                     'name': name,
@@ -550,29 +551,36 @@ async def upload_and_migrate_project(
                     'created_at': datetime.utcnow(),
                     'updated_at': datetime.utcnow()
                 })
+                # Get the actual project ID (may differ from generated one on conflict)
+                row = result.fetchone()
+                project_id = str(row[0]) if row else project_id
+                
+                # Delete old layer metadata for this project (in case of re-upload)
+                conn.execute(
+                    text("DELETE FROM project_layers WHERE project_id = :pid"),
+                    {'pid': project_id}
+                )
                 conn.commit()
             
-            # Store layer metadata
-            for migration_result in migration_results:
-                if migration_result.success:
-                    layer_info = next(
-                        (l for l in project_info.layers if l.name == migration_result.layer_name),
-                        None
-                    )
-                    if layer_info:
-                        insert_layer_sql = text("""
-                            INSERT INTO project_layers (
-                                id, project_id, layer_name, layer_type, 
-                                geometry_type, source_type, table_name, datasource
-                            )
-                            VALUES (
-                                :id, :project_id, :layer_name, :layer_type,
-                                :geometry_type, :source_type, :table_name, :datasource
-                            )
-                        """)
-                        
-                        with db.get_engine().connect() as conn:
-                            conn.execute(insert_layer_sql, {
+            # Store layer metadata (all in one connection)
+            with db.get_engine().connect() as conn:
+                for migration_result in migration_results:
+                    if migration_result.success:
+                        layer_info = next(
+                            (l for l in project_info.layers if l.name == migration_result.layer_name),
+                            None
+                        )
+                        if layer_info:
+                            conn.execute(text("""
+                                INSERT INTO project_layers (
+                                    id, project_id, layer_name, layer_type, 
+                                    geometry_type, source_type, table_name, datasource
+                                )
+                                VALUES (
+                                    :id, :project_id, :layer_name, :layer_type,
+                                    :geometry_type, :source_type, :table_name, :datasource
+                                )
+                            """), {
                                 'id': str(uuid.uuid4()),
                                 'project_id': project_id,
                                 'layer_name': layer_info.name,
@@ -582,7 +590,7 @@ async def upload_and_migrate_project(
                                 'table_name': migration_result.table_name,
                                 'datasource': 'postgis'
                             })
-                            conn.commit()
+                conn.commit()
             
             # Build response
             successful_migrations = [r for r in migration_results if r.success]
