@@ -47,7 +47,9 @@
   ],
   "projections": [
     {"code": "EPSG:3857", "proj": "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext +no_defs", "label": "WGS 84 / Pseudo-Mercator"},
-    {"code": "EPSG:4326", "proj": "+proj=longlat +datum=WGS84 +no_defs", "label": "WGS 84"},
+    {"code": "EPSG:4326", "proj": "+proj=longlat +datum=WGS84 +no_defs", "label": "WGS 84 (DD)", "precision": 6, "format": "decimal", "addDirection": "suffix", "swapLonLat": true},
+    {"code": "WGS84-DMS", "proj": "+proj=longlat +datum=WGS84 +no_defs", "label": "WGS 84 (DMS)", "precision": 1, "format": "dms", "addDirection": "suffix", "swapLonLat": true},
+    {"code": "WGS84-DM",  "proj": "+proj=longlat +datum=WGS84 +no_defs", "label": "WGS 84 (DM)", "precision": 4, "format": "dm", "addDirection": "suffix", "swapLonLat": true},
     {"code": "EPSG:2056", "proj": "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs", "label": "CH1903+ / LV95"},
     {"code": "EPSG:21781", "proj": "+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs", "label": "CH1903 / LV03"},
     {"code": "EPSG:32632", "proj": "+proj=utm +zone=32 +datum=WGS84 +units=m +no_defs", "label": "WGS 84 / UTM zone 32N"},

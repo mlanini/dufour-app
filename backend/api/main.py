@@ -1622,6 +1622,10 @@ async def wms_proxy(project_name: str, request: Request):
         query_params = dict(request.query_params)
         query_params['MAP'] = str(temp_path)
         
+        # Default SERVICE to WMS if not specified
+        if 'SERVICE' not in query_params:
+            query_params['SERVICE'] = 'WMS'
+        
         # Ensure SERVICE and REQUEST are present (QWC2 may send via POST body)
         async with httpx.AsyncClient(timeout=30.0) as client:
             if request.method == "POST":

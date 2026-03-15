@@ -71,7 +71,8 @@ class DatabaseConnection:
             pool_size=5,  # Number of persistent connections
             max_overflow=10,  # Additional connections when pool full
             pool_timeout=30,  # Seconds to wait for connection
-            pool_recycle=3600,  # Recycle connections after 1 hour
+            pool_recycle=300,  # Recycle connections every 5 min (alwaysdata closes idle connections)
+            pool_pre_ping=True,  # Verify connection is alive before using it
             echo=os.getenv('LOG_LEVEL') == 'DEBUG',  # Log SQL queries in debug mode
             connect_args={
                 'connect_timeout': 10,

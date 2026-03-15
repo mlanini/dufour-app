@@ -6,7 +6,7 @@
   "abstract": "Default project for Dufour application",
   "keywords": ["military", "tactical", "swiss"],
   "mapCrs": "EPSG:3857",
-  "additionalMouseCrs": ["EPSG:4326", "EPSG:2056"],
+  "additionalMouseCrs": ["WGS84-DMS", "WGS84-DM", "EPSG:2056"],
   "extent": [664577, 5753148, 1167741, 6075303],
   "scales": [
     1000000, 500000, 250000, 100000, 50000, 25000,

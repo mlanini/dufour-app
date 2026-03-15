@@ -73,9 +73,15 @@ import LocaleUtils from 'qwc2/utils/LocaleUtils';
 
 /**
  * Custom coordinate formatter for the BottomBar.
- * When displayCrs is "MGRS", converts WGS84 lon/lat to MGRS string.
- * For all other CRS, reproduces the default QWC2 formatting so that
- * the coordinateFormatter prop does not swallow the standard display.
+ *
+ * Handles pseudo-CRS:
+ *  - "MGRS"      → converts WGS84 lon/lat to MGRS string
+ *  - "WGS84-DMS" → degrees ° minutes ' seconds " with N/S E/W suffix
+ *  - "WGS84-DM"  → degrees ° minutes ' with N/S E/W suffix
+ *
+ * For EPSG:4326 (DD) and all other CRS, uses the native QWC2 formatting
+ * via CoordinatesUtils.getFormattedCoordinate which reads format/addDirection/
+ * swapLonLat from the projection config in config.json.
  */
 function coordinateFormatter(coordinate, crs) {
     if (crs === "MGRS") {
@@ -86,7 +92,17 @@ function coordinateFormatter(coordinate, crs) {
             return "—";
         }
     }
-    // Default formatting for other CRS (same logic as CoordinateDisplayer)
+    // WGS84-DMS and WGS84-DM are pseudo-CRS sharing EPSG:4326 proj4 definition.
+    // Use CoordinatesUtils.getFormattedCoordinate which reads format/addDirection/
+    // swapLonLat from config.json projections automatically.
+    if (crs === "WGS84-DMS" || crs === "WGS84-DM" || crs === "EPSG:4326") {
+        if (!isNaN(coordinate[0]) && !isNaN(coordinate[1])) {
+            // coordinate is already in the target CRS (lon, lat)
+            return CoordinatesUtils.getFormattedCoordinate(coordinate, crs);
+        }
+        return "";
+    }
+    // Default formatting for other CRS (metric projections etc.)
     if (!isNaN(coordinate[0]) && !isNaN(coordinate[1])) {
         const decimals = CoordinatesUtils.getPrecision(crs);
         return LocaleUtils.toLocaleFixed(coordinate[0], decimals) + " " + LocaleUtils.toLocaleFixed(coordinate[1], decimals);
