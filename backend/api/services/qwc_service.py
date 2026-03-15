@@ -143,6 +143,10 @@ class QWCService:
                 # Build QWC2-compatible WMS URL
                 wms_url = f"{api_base_url}/api/projects/{project_name}/wms"
 
+                # Determine bbox in EPSG:4326 for QWC2
+                # If project CRS is EPSG:2056 (Swiss), extent is in Swiss coords → reproject to WGS84
+                bbox_bounds = self._extent_to_wgs84(extent, map_crs)
+
                 item = {
                     "id": project_name,
                     "name": project_name,
@@ -150,10 +154,10 @@ class QWCService:
                     "description": project.get('description') or '',
                     "url": wms_url,
                     "attribution": "Dufour.app",
-                    "mapCrs": "EPSG:3857",
+                    "mapCrs": map_crs,
                     "bbox": {
                         "crs": "EPSG:4326",
-                        "bounds": [-180, -85, 180, 85]
+                        "bounds": bbox_bounds
                     },
                     "initialBbox": {
                         "crs": map_crs,
@@ -171,7 +175,7 @@ class QWCService:
                     ],
                     "sublayers": [],
                     "thumbnail": "img/mapthumbs/default.jpg",
-                    "additionalMouseCrs": ["EPSG:2056", "EPSG:4326", "EPSG:21781", "MGRS"]
+                    "additionalMouseCrs": ["EPSG:2056", "EPSG:21781", "WGS84-DMS", "WGS84-DM", "MGRS"]
                 }
                 items.append(item)
             except Exception as e:
@@ -339,7 +343,25 @@ class QWCService:
     
     
     # ============ Private Helper Methods ============
-    
+
+    def _extent_to_wgs84(self, extent: list, src_crs: str) -> List[float]:
+        """
+        Convert extent [xmin, ymin, xmax, ymax] from src_crs to WGS84 (EPSG:4326).
+        Falls back to a global bbox on error.
+        """
+        try:
+            from pyproj import Transformer
+            transformer = Transformer.from_crs(src_crs, "EPSG:4326", always_xy=True)
+            xmin, ymin = transformer.transform(extent[0], extent[1])
+            xmax, ymax = transformer.transform(extent[2], extent[3])
+            return [
+                round(xmin, 6), round(ymin, 6),
+                round(xmax, 6), round(ymax, 6)
+            ]
+        except Exception as e:
+            logger.warning(f"_extent_to_wgs84 failed for {src_crs}: {e}")
+            return [-180, -85, 180, 85]
+
     def _get_text(self, root: ET.Element, xpath: str) -> Optional[str]:
         """Safely get text from XML element"""
         elem = root.find(xpath)

@@ -1629,7 +1629,7 @@ async def wms_proxy(project_name: str, request: Request):
         # Default REQUEST to GetCapabilities if not specified
         if 'REQUEST' not in query_params:
             query_params['REQUEST'] = 'GetCapabilities'
-        async with httpx.AsyncClient(timeout=30.0) as client:
+        async with httpx.AsyncClient(timeout=120.0) as client:
             if request.method == "POST":
                 body = await request.body()
                 from urllib.parse import parse_qs
@@ -1651,13 +1651,29 @@ async def wms_proxy(project_name: str, request: Request):
             if response.status_code != 200:
                 logger.warning(f"WMS proxy: QGIS Server returned {response.status_code} for {project_name}")
                 logger.warning(f"WMS response body (first 500 chars): {response.text[:500]}")
+
+            # Determine HTTP status to return:
+            # WMS spec says errors should be 200 + XML ServiceExceptionReport.
+            # If QGIS returns 500 with XML body, pass it as 200 so QWC2 can parse the error.
+            # If QGIS returns 500 with non-XML body, return 502 with detail.
+            content_type = response.headers.get('Content-Type', 'application/xml')
+            if response.status_code >= 500:
+                body_text = response.text[:200]
+                is_xml = body_text.lstrip().startswith('<')
+                if is_xml:
+                    # QGIS WMS ServiceException – return as 200 so QWC2 handles it
+                    return_status = 200
+                else:
+                    return_status = 502
+            else:
+                return_status = response.status_code
             
             # Return QGIS Server response with correct Content-Type
             return Response(
                 content=response.content,
-                status_code=response.status_code,
+                status_code=return_status,
                 headers={
-                    'Content-Type': response.headers.get('Content-Type', 'application/xml'),
+                    'Content-Type': content_type,
                     'Access-Control-Allow-Origin': '*'
                 }
             )
