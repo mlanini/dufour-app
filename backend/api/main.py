@@ -160,7 +160,36 @@ data_service = DataService()
 qwc_service = QWCService()
 project_migrator = ProjectMigrator()
 
-# Global exception handler to ensure CORS headers on errors
+
+# ---------------------------------------------------------------------------
+# DB migration on startup — apply ALTER TABLE for new columns idempotently
+# so the app works even if init_schema.py was not re-run on an existing DB.
+# ---------------------------------------------------------------------------
+@app.on_event("startup")
+async def run_db_migrations():
+    """Apply incremental DB migrations at startup (idempotent ALTER TABLE)."""
+    from sqlalchemy import text as _text
+    migrations = [
+        # public.projects — per-project schema pointer
+        "ALTER TABLE projects ADD COLUMN IF NOT EXISTS schema_name VARCHAR(63)",
+        # public.project_layers — enriched metadata columns
+        "ALTER TABLE project_layers ADD COLUMN IF NOT EXISTS crs VARCHAR(50)",
+        "ALTER TABLE project_layers ADD COLUMN IF NOT EXISTS features_count INTEGER DEFAULT 0",
+    ]
+    try:
+        with db.get_engine().connect() as conn:
+            for sql in migrations:
+                try:
+                    conn.execute(_text(sql))
+                except Exception as exc:
+                    logger.warning(f"Migration skipped ({exc}): {sql[:60]}")
+            conn.commit()
+        logger.info("DB migrations applied at startup")
+    except Exception as exc:
+        logger.error(f"DB migration error at startup: {exc}")
+
+
+
 @app.exception_handler(Exception)
 async def global_exception_handler(request, exc):
     from fastapi.responses import JSONResponse
