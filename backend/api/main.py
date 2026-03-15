@@ -1602,7 +1602,7 @@ async def wms_proxy(project_name: str, request: Request):
             logger.info(f"WMS: wrote {project_name}.qgz ({len(qgz_bytes)} bytes) to {temp_path}")
         
         # 3. Forward to QGIS Server with MAP parameter
-        qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://localhost:80')
+        qgis_server_url = os.getenv('QGIS_SERVER_URL', 'http://localhost:80/ows/')
         
         # Build query string with MAP parameter
         query_params = dict(request.query_params)
@@ -1619,9 +1619,13 @@ async def wms_proxy(project_name: str, request: Request):
                         query_params[key] = values[0]
             
             # Log the forwarded request for debugging
-            logger.info(f"WMS proxy → {qgis_server_url} params={list(query_params.keys())}")
+            logger.info(f"WMS proxy → {qgis_server_url} method={request.method} params={list(query_params.keys())}")
             
-            response = await client.get(qgis_server_url, params=query_params)
+            # Forward with the correct HTTP method
+            if request.method == "POST":
+                response = await client.post(qgis_server_url, params=query_params)
+            else:
+                response = await client.get(qgis_server_url, params=query_params)
             
             # Log non-200 responses for debugging
             if response.status_code != 200:
@@ -1641,7 +1645,7 @@ async def wms_proxy(project_name: str, request: Request):
     except HTTPException:
         raise
     except httpx.ConnectError as e:
-        logger.error(f"WMS proxy: cannot reach QGIS Server at {os.getenv('QGIS_SERVER_URL', 'http://localhost:80')}: {e}")
+        logger.error(f"WMS proxy: cannot reach QGIS Server at {os.getenv('QGIS_SERVER_URL', 'http://localhost:80/ows/')}: {e}")
         raise HTTPException(
             status_code=502,
             detail=f"QGIS Server unreachable. The map rendering service is not available. ({e})"

@@ -59,7 +59,8 @@ ENV MILSYMBOL_PORT=2525 \
     MILSYMBOL_SERVER_URL=http://localhost:2525
 
 # QGIS Server via base image nginx on port 80
-ENV QGIS_SERVER_URL=http://localhost:80
+# The base image nginx exposes /ows/ location that rewrites to FastCGI
+ENV QGIS_SERVER_URL=http://localhost:80/ows/
 
 # Copy startup script
 COPY backend/api/start.sh /start.sh
