@@ -3,8 +3,8 @@
 
 /* App menu label (hamburger button text in the topbar) */
 .appmenu-label {
-    color: #ffffff !important;
+    color: #666666 !important;
 }
 .appmenu-label:hover {
-    color: #bbbbbb !important;
+    color: #888888 !important;
 }
