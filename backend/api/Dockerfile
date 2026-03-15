@@ -58,10 +58,14 @@ ENV MILSYMBOL_PORT=2525 \
     MILSYMBOL_MAX_CANVAS=2000 \
     MILSYMBOL_SERVER_URL=http://localhost:2525
 
-# QGIS Server via base image nginx on port 80
-# The base image nginx exposes /ows/ location that rewrites to FastCGI
-# Use 127.0.0.1 instead of localhost to avoid DNS resolution issues in containers
-ENV QGIS_SERVER_URL=http://127.0.0.1:80/ows/
+# QGIS Server: replace base image nginx config with our own predictable config
+# Base image config has complex rewrites (/ows/, /ogc/) that may change between versions
+# Our config exposes a simple /qgis location → FastCGI on port 9993
+COPY backend/api/qgis-nginx.conf /etc/nginx/nginx.conf
+
+# QGIS Server via our custom nginx on port 80
+# /qgis path forwards directly to QGIS Server FastCGI (spawn-fcgi on port 9993)
+ENV QGIS_SERVER_URL=http://127.0.0.1:80/qgis
 
 # Copy startup script
 COPY backend/api/start.sh /start.sh

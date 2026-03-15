@@ -20,8 +20,18 @@ sleep 1
 echo "✅ Xvfb started (PID=$XVFB_PID)"
 
 # Start nginx (QGIS HTTP proxy on port 80)
+# Using our custom config at /etc/nginx/nginx.conf (copied in Dockerfile)
+echo "  nginx config test:"
+nginx -t 2>&1 || true
 nginx 2>&1 || true
-echo "✅ nginx started on port 80"
+sleep 0.5
+if pidof nginx > /dev/null 2>&1; then
+  echo "✅ nginx started on port 80 (PID=$(pidof nginx | head -1))"
+else
+  echo "❌ nginx FAILED to start! Trying to diagnose:"
+  cat /etc/nginx/nginx.conf
+  nginx -t 2>&1
+fi
 
 # Start QGIS Server via spawn-fcgi on port 9993
 spawn-fcgi -n -d /var/lib/qgis -P /run/qgis.pid -p 9993 -- /usr/lib/cgi-bin/qgis_mapserv.fcgi > /var/log/qgis/server.log 2>&1 &
@@ -29,24 +39,34 @@ QGIS_PID=$!
 echo "✅ QGIS Server (FastCGI) started (PID=$QGIS_PID) on port 9993"
 
 # Wait for QGIS Server to respond via nginx on port 80
-# Base image nginx location /ows/ rewrites to QGIS FastCGI
+# Our custom nginx config: /qgis → FastCGI on port 9993
 QGIS_READY=0
 for i in $(seq 1 15); do
-  HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:80/ows/?SERVICE=WMS&REQUEST=GetCapabilities" 2>/dev/null || echo "000")
-  if [ "$HTTP_CODE" != "000" ]; then
-    QGIS_READY=1
-    echo "✅ QGIS Server responding via nginx /ows/ (HTTP $HTTP_CODE) after ${i}s"
-    break
+  # First check nginx health endpoint
+  HEALTH_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:80/health" 2>/dev/null || echo "000")
+  if [ "$HEALTH_CODE" = "200" ]; then
+    # nginx is up, now check QGIS via /qgis path
+    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" "http://127.0.0.1:80/qgis?SERVICE=WMS&REQUEST=GetCapabilities" 2>/dev/null || echo "000")
+    if [ "$HTTP_CODE" != "000" ]; then
+      QGIS_READY=1
+      echo "✅ QGIS Server responding via nginx /qgis (HTTP $HTTP_CODE) after ${i}s"
+      break
+    fi
   fi
   sleep 1
 done
 if [ "$QGIS_READY" -eq 0 ]; then
   echo "⚠️  WARNING: QGIS Server not responding on port 80 after 15s"
+  echo "  nginx health: $(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:80/health 2>/dev/null || echo FAIL)"
+  echo "  nginx pid: $(pidof nginx 2>/dev/null || echo NONE)"
+  echo "  spawn-fcgi alive: $(kill -0 $QGIS_PID 2>/dev/null && echo yes || echo no)"
+  echo "  netstat port 80: $(ss -tlnp | grep ':80 ' 2>/dev/null || echo 'not listening')"
+  echo "  netstat port 9993: $(ss -tlnp | grep ':9993 ' 2>/dev/null || echo 'not listening')"
   echo "  QGIS log:"
   tail -20 /var/log/qgis/server.log 2>/dev/null || true
   echo "  nginx error log:"
-  cat /var/log/nginx/error.log 2>/dev/null | tail -10 || true
-  echo "  spawn-fcgi alive: $(kill -0 $QGIS_PID 2>/dev/null && echo yes || echo no)"
+  tail -10 /var/log/nginx/error.log 2>/dev/null || true
+  echo "  --- Continuing anyway (WMS will fail) ---"
 fi
 
 # ---- Milsymbol Server ----
