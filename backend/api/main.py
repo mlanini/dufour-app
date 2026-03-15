@@ -471,51 +471,18 @@ async def upload_and_migrate_project(
                     companion_paths.append(companion_path)
                     logger.info(f"Saved companion file: {df.filename} ({len(df_content)} bytes, exists={companion_path.exists()})")
             
-            logger.info(f"Companion paths for pre-check: {[str(p) for p in companion_paths]}")
+            logger.info(f"Companion paths: {[str(p) for p in companion_paths]}")
             
-            # Pre-check: identify missing companion data files BEFORE migration
-            _, missing_files = project_migrator.check_missing_files(
-                qgz_path=temp_file,
-                companion_files=companion_paths
-            )
-            
-            if missing_files:
-                raise HTTPException(
-                    status_code=422,
-                    detail={
-                        "error": "Missing companion data files",
-                        "message": (
-                            f"The QGIS project references {len(missing_files)} external data file(s) "
-                            f"that were not found in the .qgz archive or in the uploaded data_files."
-                        ),
-                        "missing_files": missing_files,
-                        "hint": (
-                            "Re-upload with the missing files using the data_files parameter. "
-                            "Example: curl -F 'file=@project.qgz' "
-                            + " ".join(f"-F 'data_files=@{f}'" for f in missing_files)
-                        )
-                    }
-                )
-            
-            # Migrate project: parse, extract layers, update datasources
+            # Migrate project: parse, extract layers, update datasources.
+            # Layers whose source file is missing are skipped (not migrated)
+            # and kept as-is in the .qgz.  This follows the QGIS Cloud pattern
+            # where data upload is best-effort and non-blocking.
             project_info, migration_results, modified_qgz_bytes = project_migrator.migrate_project(
                 qgz_path=temp_file,
                 project_name=name,
                 target_crs='EPSG:2056',  # Swiss LV95
                 companion_files=companion_paths
             )
-            
-            # Check if any migrations failed critically
-            critical_failures = [r for r in migration_results if not r.success and r.error != "Skipped"]
-            if critical_failures:
-                # Rollback: drop created tables
-                project_migrator.rollback_migration(name, migration_results)
-                
-                error_messages = [f"{r.layer_name}: {r.error}" for r in critical_failures]
-                raise HTTPException(
-                    status_code=500,
-                    detail=f"Layer migration failed: {'; '.join(error_messages)}"
-                )
             
             # Store project in database
             project_id = str(uuid.uuid4())

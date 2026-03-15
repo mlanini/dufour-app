@@ -121,9 +121,9 @@ class ProjectMigrator:
                     if not source_path:
                         # Extract filename for clearer error message
                         ds = layer_info.datasource.split('|')[0].lstrip('./')
-                        logger.error(
+                        logger.warning(
                             f"Source file not found for layer: {layer_info.name} "
-                            f"(datasource: {ds})"
+                            f"(datasource: {ds}) — layer skipped, not migrated to PostGIS"
                         )
                         migration_results.append(MigrationResult(
                             layer_name=layer_info.name,
