@@ -203,42 +203,50 @@ class LayerExtractor:
             properties: Dictionary of property names and types
             schema: Target PostgreSQL schema (default: public)
         """
+        # Normalise geometry type: strip '3D ', take last word, uppercase
+        geom_type_pg = geometry_type.replace('3D ', '').split()[-1].upper()
+
         with self.engine.connect() as conn:
             # Drop table if exists (qualified with schema)
             conn.execute(text(f'DROP TABLE IF EXISTS "{schema}"."{table_name}" CASCADE'))
-            
-            # Build column definitions
+
+            # Build column definitions including the geometry column inline
+            # (avoids dependency on the legacy AddGeometryColumn function)
             columns = ['fid SERIAL PRIMARY KEY']
-            
+
             # Add attribute columns
             for prop_name, prop_type in properties.items():
                 col_name = self._sanitize_column_name(prop_name)
                 pg_type = self._map_fiona_type_to_postgres(prop_type)
                 columns.append(f'"{col_name}" {pg_type}')
-            
+
+            # Add geometry column directly (geometry(Type,SRID) syntax — PostGIS 2+)
+            columns.append(f'geom geometry({geom_type_pg},{srid})')
+
             # Create table in target schema
             columns_sql = ', '.join(columns)
             create_sql = f'CREATE TABLE "{schema}"."{table_name}" ({columns_sql})'
             conn.execute(text(create_sql))
-            
-            # Add geometry column (schema-qualified)
-            add_geom_sql = f"""
-                SELECT AddGeometryColumn(
-                    '{schema}', '{table_name}', 'geom', {srid}, 
-                    '{geometry_type.upper()}', 2
-                )
-            """
-            conn.execute(text(add_geom_sql))
-            
+
+            # Register in geometry_columns view (done automatically by PostGIS 2+
+            # when using the typed geometry column, but call the legacy function
+            # as a no-op fallback for older versions — ignore any error)
+            try:
+                conn.execute(text(
+                    f"SELECT populate_geometry_columns('\"{schema}\".\"{table_name}\"'::regclass)"
+                ))
+            except Exception:
+                pass  # Not critical — geometry_columns is a view in PostGIS 2+
+
             # Create spatial index (schema-qualified)
             index_sql = (
                 f'CREATE INDEX "{table_name}_geom_idx" '
                 f'ON "{schema}"."{table_name}" USING GIST (geom)'
             )
             conn.execute(text(index_sql))
-            
+
             conn.commit()
-            logger.info(f"Created PostGIS table: {schema}.{table_name}")
+            logger.info(f"Created PostGIS table: {schema}.{table_name} (geom={geom_type_pg},{srid})")
     
     def _sanitize_column_name(self, name: str) -> str:
         """
@@ -356,12 +364,20 @@ class LayerExtractor:
             srid = self._extract_epsg_code(src_init if 'EPSG' in src_init.upper() else 'EPSG:2056')
 
         inserted = 0
-        
+        skipped = 0
+
         with self.engine.connect() as conn:
             for feature in src:
                 try:
+                    raw_geom = feature.get('geometry') if hasattr(feature, 'get') else feature['geometry']
+
+                    # Skip features without geometry rather than crashing
+                    if raw_geom is None:
+                        skipped += 1
+                        continue
+
                     # Get geometry
-                    geom = shape(feature['geometry'])
+                    geom = shape(raw_geom)
                     
                     # Transform if needed
                     if transformer:
@@ -403,10 +419,13 @@ class LayerExtractor:
                     
                 except Exception as e:
                     logger.warning(f"Failed to insert feature {inserted}: {e}")
+                    skipped += 1
                     continue
-            
+
             conn.commit()
-        
+
+        if skipped:
+            logger.info(f"Skipped {skipped} features (null geometry or error) in {schema}.{table_name}")
         return inserted
     
     def generate_postgis_datasource(

@@ -698,16 +698,17 @@ async def delete_project(project_name: str):
     """
     # Delete QGIS Project
     
-    Permanently remove a project and its associated data.
+    Permanently remove a project and all its associated data.
     
     ### Parameters:
     - `project_name`: Project identifier to delete
     
     ### Actions:
-    - Deletes project record from database
-    - Removes .qgz file from storage
-    - Clears QWC2 theme configuration
-    - **Does NOT** delete associated PostGIS tables (manual cleanup required)
+    - Drops the per-project PostgreSQL schema (`prj_<name>`) **with CASCADE**,
+      removing all `lyr_*` feature tables and the per-schema `project_layers` table
+    - Deletes layer metadata from the central `public.project_layers` catalog
+    - Deletes the project record from `public.projects`
+    - Removes legacy `.qgz` file from storage if present
     
     ### Returns:
     ```json
@@ -721,13 +722,43 @@ async def delete_project(project_name: str):
     - `500`: Deletion failed
     
     ### Warning:
-    This operation cannot be undone. PostGIS tables must be dropped manually.
+    This operation cannot be undone.
     """
     try:
-        # Delete from PostgreSQL database (primary storage)
+        # ── 1. Fetch project metadata before deletion ─────────────────
+        with db.get_engine().connect() as conn:
+            row = conn.execute(
+                text("SELECT id, schema_name FROM projects WHERE name = :name"),
+                {'name': project_name}
+            ).fetchone()
+
+        if not row:
+            raise HTTPException(status_code=404, detail="Project not found")
+
+        project_id = str(row[0])
+        schema_name = row[1]  # e.g. 'prj_caresg'
+
+        # ── 2. Drop per-project schema (CASCADE removes all lyr_* tables) ─
+        if schema_name:
+            with db.get_engine().connect() as conn:
+                conn.execute(
+                    text(f'DROP SCHEMA IF EXISTS "{schema_name}" CASCADE')
+                )
+                conn.commit()
+            logger.info(f"Dropped schema: {schema_name}")
+
+        # ── 3. Remove layer metadata from central catalog ─────────────
+        with db.get_engine().connect() as conn:
+            conn.execute(
+                text("DELETE FROM project_layers WHERE project_id = :pid"),
+                {'pid': project_id}
+            )
+            conn.commit()
+
+        # ── 4. Delete from PostgreSQL database (primary storage) ──────
         deleted = storage_service.delete_project(project_name)
 
-        # Also attempt to clean up legacy filesystem files (.qgs / .qgz)
+        # ── 5. Best-effort cleanup of legacy filesystem files ─────────
         try:
             await project_service.delete_project(project_name)
         except Exception:

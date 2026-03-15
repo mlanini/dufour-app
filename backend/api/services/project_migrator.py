@@ -162,15 +162,30 @@ class ProjectMigrator:
         # ── 6. Extract feature tables for vector layers ───────────────
         extractor = LayerExtractor(project_name=project_name, engine=self.engine)
 
+        EXTRACTABLE_SOURCE_TYPES = {'gpkg', 'shp', 'geojson', 'fgb'}
+
         for rec in layer_records:
-            if rec.layer_type != 'vector' or not rec.datasource:
+            # Accept 'vector' or layers where source_type suggests vector data
+            is_vector = (
+                rec.layer_type == 'vector'
+                or rec.source_type in EXTRACTABLE_SOURCE_TYPES
+            )
+            if not is_vector or not rec.datasource:
+                logger.debug(
+                    f"Skipping layer '{rec.layer_name}': "
+                    f"layer_type={rec.layer_type!r}, source_type={rec.source_type!r}, "
+                    f"has_datasource={bool(rec.datasource)}"
+                )
                 continue
 
             # Find matching companion file
             companion_path = self._resolve_companion(rec.datasource, companion_map)
             if companion_path is None:
-                logger.debug(
-                    f"No companion for vector layer '{rec.layer_name}' — skipping table"
+                ds_snippet = (rec.datasource or '')[:80]
+                logger.info(
+                    f"No companion for layer '{rec.layer_name}' "
+                    f"(datasource={ds_snippet!r}, "
+                    f"available={list(companion_map.keys())}) — skipping table"
                 )
                 continue
 
@@ -239,8 +254,11 @@ class ProjectMigrator:
                     f"Failed to extract feature table for '{rec.layer_name}': {exc}"
                 )
 
-        # ── 7. Populate per-schema project_layers table ───────────────
-        self._populate_schema_layers(proj_schema, layer_records)
+        # ── 7. Per-schema project_layers table is intentionally NOT populated:
+        #       public.project_layers (written by main.py) is the single source
+        #       of truth for layer metadata.  The per-schema schema contains only
+        #       the lyr_* feature tables (PostGIS geometries).
+        # ─────────────────────────────────────────────────────────────────────
 
         # ── 8. Return ─────────────────────────────────────────────────
         qgz_bytes = qgz_path.read_bytes()
@@ -262,7 +280,12 @@ class ProjectMigrator:
         logger.info(f"Schema ensured: {schema}")
 
     def _create_schema_tables(self, schema: str) -> None:
-        """Create project + project_layers tables inside the per-project schema."""
+        """Create the project metadata table inside the per-project schema.
+
+        Note: project_layers is NOT created here.  Layer metadata is stored
+        exclusively in public.project_layers (the central catalog written by
+        main.py).  The per-schema tables contain only feature data (lyr_*).
+        """
         ddl = f"""
             CREATE TABLE IF NOT EXISTS "{schema}".project (
                 id          UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -276,20 +299,6 @@ class ProjectMigrator:
                 extent_maxy DOUBLE PRECISION,
                 created_at  TIMESTAMP DEFAULT NOW(),
                 updated_at  TIMESTAMP DEFAULT NOW()
-            );
-
-            CREATE TABLE IF NOT EXISTS "{schema}".project_layers (
-                id             UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-                layer_name     VARCHAR(255) NOT NULL,
-                layer_type     VARCHAR(50),
-                geometry_type  VARCHAR(100),
-                source_type    VARCHAR(50),
-                crs            VARCHAR(50),
-                table_name     VARCHAR(63),
-                datasource     TEXT,
-                features_count INTEGER DEFAULT 0,
-                success        BOOLEAN DEFAULT TRUE,
-                error          TEXT
             );
         """
         with self.engine.connect() as conn:
