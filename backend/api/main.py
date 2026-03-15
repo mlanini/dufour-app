@@ -1590,7 +1590,15 @@ async def wms_proxy(project_name: str, request: Request):
     """
     try:
         # 1. Retrieve .qgz from PostgreSQL BYTEA
-        qgz_bytes = storage_service.retrieve_qgz(project_name)
+        try:
+            qgz_bytes = storage_service.retrieve_qgz(project_name)
+        except Exception as db_err:
+            logger.error(f"WMS proxy: DB error for {project_name}: {db_err}")
+            raise HTTPException(
+                status_code=502,
+                detail=f"Database error retrieving project {project_name}: {db_err}"
+            )
+        
         if not qgz_bytes:
             raise HTTPException(status_code=404, detail=f"Project {project_name} not found")
         

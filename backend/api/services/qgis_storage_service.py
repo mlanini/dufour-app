@@ -144,6 +144,9 @@ class QGISStorageService:
         
         Returns:
             Binary .qgz content or None if not found
+            
+        Raises:
+            Exception: on database connection/query errors (not swallowed)
         """
         session = get_db_session()
         try:
@@ -155,7 +158,7 @@ class QGISStorageService:
             
             row = result.fetchone()
             if not row:
-                logger.warning(f"Project {project_name} not found")
+                logger.warning(f"Project '{project_name}' not found in DB")
                 return None
             
             qgz_data = bytes(row[0])
@@ -165,8 +168,8 @@ class QGISStorageService:
             return qgz_data
             
         except Exception as e:
-            logger.error(f"Failed to retrieve project {project_name}: {e}")
-            return None
+            logger.error(f"DB ERROR retrieving project {project_name}: {e}")
+            raise  # Propagate — let caller distinguish "not found" from "DB error"
         finally:
             session.close()
     
